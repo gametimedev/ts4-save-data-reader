@@ -20,8 +20,8 @@ const { readSaveFileData } = require('ts4-save-data-reader');
 
 let saveFilePath = "C:\\path\\to\\your\\savefile.save";
 
-readSaveFileData(saveFilePath).then(data => {
-    console.log(data);
+readSaveFileData(saveFilePath).then(dataBuffer => {
+    console.log(dataBuffer.toString('utf8'));
 }).catch(err => console.error(err));
 ```
 
@@ -29,7 +29,7 @@ readSaveFileData(saveFilePath).then(data => {
 
 ### `readSaveFileData(saveFilePath)`
 
-Reads the data from the Save Data entry of a Sims 4 save file and returns the data as a json string.
+Reads the data from the Save Data entry of a Sims 4 save file and returns the data as a json file buffer.
 
 - `saveFilePath` (string): The path to the save file.
 
