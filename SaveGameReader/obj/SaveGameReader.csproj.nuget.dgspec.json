@@ -31,7 +31,14 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj": {
+                "projectPath": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj"
+              },
+              "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Package\\Package.csproj": {
+                "projectPath": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Package\\Package.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -73,6 +80,42 @@
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
         }
+      }
+    },
+    "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj": {
+      "restore": {
+        "projectUniqueName": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj",
+        "projectName": "Interfaces",
+        "projectPath": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj",
+        "UsingMicrosoftNETSdk": false,
+        "frameworks": {
+          "net48": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net48": {}
+      }
+    },
+    "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Package\\Package.csproj": {
+      "restore": {
+        "projectUniqueName": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Package\\Package.csproj",
+        "projectName": "Package",
+        "projectPath": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Package\\Package.csproj",
+        "UsingMicrosoftNETSdk": false,
+        "frameworks": {
+          "net48": {
+            "projectReferences": {
+              "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj": {
+                "projectPath": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net48": {}
       }
     }
   }

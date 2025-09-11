@@ -2,3 +2,7 @@ test.js
 /SaveGameReader
 /SaveGameReader/*
 SaveGameReader
+.vs
+/.vs
+/.vs/*
+ts4-save-data-reader.sln

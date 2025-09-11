@@ -12,11 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\s4pi Extras\DDSPanel\DDSPanel.csproj" />
-    <ProjectReference Include="..\s4pi Wrappers\ImageResource\ImageResource.csproj" />
-    <ProjectReference Include="..\s4pi\Interfaces\Interfaces.csproj" />
-    <ProjectReference Include="..\s4pi\Package\Package.csproj" />
-    <ProjectReference Include="..\s4pi\Settings\Settings.csproj" />
+    <ProjectReference Include="G:\User data\Documents\Sims Tools\Sims4Tools-0.6.0\s4pi\Interfaces\Interfaces.csproj" />
+    <ProjectReference Include="G:\User data\Documents\Sims Tools\Sims4Tools-0.6.0\s4pi\Package\Package.csproj" />
   </ItemGroup>
 
 </Project>

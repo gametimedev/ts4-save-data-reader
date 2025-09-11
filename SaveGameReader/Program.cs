@@ -1,22 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.IO;
-using System.Drawing.Imaging;
-using System.Reflection;
 using ProtoBuf;
 using s4pi.Package;
 using s4pi.Interfaces;
 using TS4SaveGame = EA.Sims4.Persistence;
 
 //Steps to import missing stuff
-//1. Import Settings, DDSPanel, Interface, ImageResource & Package from S4PE
+//1. Import  Interface & Package from S4PE
 //2. Copy the Proto folder from TS4SimRipper
 //3. Install the protobuf-net NuGet package
 

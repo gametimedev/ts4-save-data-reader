@@ -130,3 +130,7 @@ dist
 .pnp.*
 
 test.js
+
+.vs
+/.vs/*
+/.vs

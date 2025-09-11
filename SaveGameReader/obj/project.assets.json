@@ -30,6 +30,27 @@
             "related": ".xml"
           }
         }
+      },
+      "Interfaces/1.0.0": {
+        "type": "project",
+        "compile": {
+          "bin/placeholder/Interfaces.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Interfaces.dll": {}
+        }
+      },
+      "Package/1.0.0": {
+        "type": "project",
+        "dependencies": {
+          "Interfaces": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Package.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Package.dll": {}
+        }
       }
     }
   },
@@ -75,10 +96,22 @@
         "protobuf-net.png",
         "readme.md"
       ]
+    },
+    "Interfaces/1.0.0": {
+      "type": "project",
+      "path": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj",
+      "msbuildProject": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj"
+    },
+    "Package/1.0.0": {
+      "type": "project",
+      "path": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Package\\Package.csproj",
+      "msbuildProject": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Package\\Package.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Interfaces >= 1.0.0",
+      "Package >= 1.0.0",
       "protobuf-net >= 3.2.56"
     ]
   },
@@ -113,7 +146,14 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj": {
+              "projectPath": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Interfaces\\Interfaces.csproj"
+            },
+            "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Package\\Package.csproj": {
+              "projectPath": "G:\\User data\\Documents\\Sims Tools\\Sims4Tools-0.6.0\\s4pi\\Package\\Package.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

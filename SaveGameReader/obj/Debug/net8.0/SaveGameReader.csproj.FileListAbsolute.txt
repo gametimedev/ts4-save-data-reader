@@ -37,3 +37,31 @@ G:\User data\Documents\Sims Tools\Sims4Tools-0.6.0\SaveGameReader\bin\Debug\net8
 G:\User data\Documents\Sims Tools\Sims4Tools-0.6.0\SaveGameReader\bin\Debug\net8.0\System.Custom.xml
 G:\User data\Documents\Sims Tools\Sims4Tools-0.6.0\SaveGameReader\obj\Debug\net8.0\SaveGameReader.csproj.AssemblyReference.cache
 G:\User data\Documents\Sims Tools\Sims4Tools-0.6.0\SaveGameReader\obj\Debug\net8.0\SaveGame.E0F3BF46.Up2Date
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\SaveGameReader.exe
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\SaveGameReader.deps.json
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\SaveGameReader.runtimeconfig.json
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\SaveGameReader.dll
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\SaveGameReader.pdb
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\protobuf-net.dll
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\protobuf-net.Core.dll
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\s4pi.Interfaces.dll
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\s4pi.Package.dll
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\System.Custom.dll
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\s4pi.Settings.dll
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\s4pi.Interfaces.pdb
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\s4pi.Package.pdb
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\System.Custom.pdb
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\System.Custom.xml
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\bin\Debug\net8.0\s4pi.Settings.pdb
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\SaveGameReader.csproj.AssemblyReference.cache
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\SaveGameReader.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\SaveGameReader.AssemblyInfoInputs.cache
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\SaveGameReader.AssemblyInfo.cs
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\SaveGameReader.csproj.CoreCompileInputs.cache
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\SaveGameReader.sourcelink.json
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\SaveGame.E0F3BF46.Up2Date
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\SaveGameReader.dll
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\refint\SaveGameReader.dll
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\SaveGameReader.pdb
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\SaveGameReader.genruntimeconfig.cache
+C:\Users\fabis\Documents\GitHub\ts4-save-data-reader\SaveGameReader\obj\Debug\net8.0\ref\SaveGameReader.dll
