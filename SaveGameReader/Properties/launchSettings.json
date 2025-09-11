@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SaveGameReader": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\fabis\\Desktop\\S4MM\\Save\\save.save\""
+    }
+  }
+}
