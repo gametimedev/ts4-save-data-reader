@@ -28,9 +28,10 @@ if (!File.Exists(savegamepath))
 // -o <outputdir> : output directory (default: new subfolder next to savefile)
 // -s <split> : split into type jsons (default: false)
 // -f <filter> : filter types (comma separated list of string types, default: all types)
+// Types: save_slot,account,neighborhoods,sims,households,zones,streets,gameplay_data,custom_colors
 
 bool split = args.Contains("-s");
-string filterarg = null;
+string filterarg = "save_slot,account,neighborhoods,sims,households";
 int filterindex = Array.IndexOf(args, "-f");
 if (filterindex == -1)
 {
@@ -79,4 +80,87 @@ if (!split)
     File.WriteAllText(outfile, json);
     int saveTime = Environment.TickCount - currentTime;
     Console.WriteLine($"SUCCESS - Saved {outfile} (Load: {loadTime}ms, Save: {saveTime}ms)");
+}
+else
+{
+    //Split into types
+
+    string[] filters = filterarg.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    int totalSaved = 0;
+    currentTime = Environment.TickCount;
+    if (filters.Contains("save_slot"))
+    {
+        string outfile = Path.Combine(outputdir, "save_slot.json");
+        string json = System.Text.Json.JsonSerializer.Serialize(save.save_slot, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outfile, json);
+        totalSaved++;
+        Console.WriteLine($"  Saved {outfile}");
+    }
+    if (filters.Contains("account"))
+    {
+        string outfile = Path.Combine(outputdir, "account.json");
+        string json = System.Text.Json.JsonSerializer.Serialize(save.account, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outfile, json);
+        totalSaved++;
+        Console.WriteLine($"  Saved {outfile}");
+    }
+    if (filters.Contains("neighborhoods"))
+    {
+        string outfile = Path.Combine(outputdir, "neighborhoods.json");
+        string json = System.Text.Json.JsonSerializer.Serialize(save.neighborhoods, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outfile, json);
+        totalSaved++;
+        Console.WriteLine($"  Saved {outfile}");
+    }
+    if (filters.Contains("sims"))
+    {
+        string outfile = Path.Combine(outputdir, "sims.json");
+        string json = System.Text.Json.JsonSerializer.Serialize(save.sims, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outfile, json);
+        totalSaved++;
+        Console.WriteLine($"  Saved {outfile}");
+    }
+    if (filters.Contains("households"))
+    {
+        string outfile = Path.Combine(outputdir, "households.json");
+        string json = System.Text.Json.JsonSerializer.Serialize(save.households, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outfile, json);
+        totalSaved++;
+        Console.WriteLine($"  Saved {outfile}");
+    }
+    if (filters.Contains("zones"))
+    {
+        string outfile = Path.Combine(outputdir, "zones.json");
+        string json = System.Text.Json.JsonSerializer.Serialize(save.zones, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outfile, json);
+        totalSaved++;
+        Console.WriteLine($"  Saved {outfile}");
+    }
+    if (filters.Contains("streets"))
+    {
+        string outfile = Path.Combine(outputdir, "streets.json");
+        string json = System.Text.Json.JsonSerializer.Serialize(save.streets, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outfile, json);
+        totalSaved++;
+        Console.WriteLine($"  Saved {outfile}");
+    }
+    if (filters.Contains("gameplay_data"))
+    {
+        string outfile = Path.Combine(outputdir, "gameplay_data.json");
+        string json = System.Text.Json.JsonSerializer.Serialize(save.gameplay_data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outfile, json);
+        totalSaved++;
+        Console.WriteLine($"  Saved {outfile}");
+    }
+    if (filters.Contains("custom_colors"))
+    {
+        string outfile = Path.Combine(outputdir, "custom_colors.json");
+        string json = System.Text.Json.JsonSerializer.Serialize(save.custom_colors, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outfile, json);
+        totalSaved++;
+        Console.WriteLine($"  Saved {outfile}");
+    }
+    int saveTime = Environment.TickCount - currentTime;
+    Console.WriteLine($"SUCCESS - Saved {totalSaved} files (Load: {loadTime}ms, Save: {saveTime}ms)");
+
 }

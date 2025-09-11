@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SaveGameReader")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0fa4163d93db14f9cbc086085d8f31d1d996f522")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+83587c62445dcf5a33058e61b5f3cb9b3e5b9f29")]
 [assembly: System.Reflection.AssemblyProductAttribute("SaveGameReader")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SaveGameReader")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
