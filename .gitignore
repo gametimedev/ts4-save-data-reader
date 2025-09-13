@@ -134,3 +134,11 @@ test.js
 .vs
 /.vs/*
 /.vs
+
+SaveGameReader/bin
+SaveGameReader/bin/*
+/SaveGameReader/bin
+/SaveGameReader/bin/*
+SaveGameReader/obj
+SaveGameReader/obj/*
+SaveGameReader/bin/*
