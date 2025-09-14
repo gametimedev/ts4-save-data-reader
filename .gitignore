@@ -137,6 +137,12 @@ test.js
 
 SaveGameReader/bin/
 SaveGameReader/obj/
+SaveGameReader/bin/*
+SaveGameReader/obj/*
+/SaveGameReader/bin/
+/SaveGameReader/obj/
+/SaveGameReader/bin/*
+/SaveGameReader/obj/*
 
 data_old
 
