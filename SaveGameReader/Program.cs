@@ -1,298 +1,266 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 using ProtoBuf;
-using s4pi.Package;
 using s4pi.Interfaces;
+using s4pi.Package;
 using TS4SaveGame = EA.Sims4.Persistence;
 
-//Steps to import missing stuff
-//1. Import  Interface & Package from S4PE
-//2. Copy the Proto folder from TS4SimRipper
-//3. Install the protobuf-net NuGet package
-
-
-if (args.Length == 0)
+/// <summary>
+/// A utility to parse and extract data from a Sims 4 save game file.
+/// </summary>
+public class SavegameExtractor
 {
-    Console.WriteLine("FAILED - No path provided");
-    return;
-}
+    private const uint SavegameResourceType = 0x0000000D;
 
-//Get savegamepath from args
-string savegamepath = args[0];
-if (!File.Exists(savegamepath))
-{
-    Console.WriteLine("FAILED - File not found");
-    return;
-}
+    public static void Main(string[] args)
+    {
+        try
+        {
+            var options = ParseArguments(args);
+            if (options == null) return;
 
-//Options
-// -o <outputdir> : output directory (default: new subfolder next to savefile)
-// -s <split> : split into type jsons (default: false)
-// -f <filter> : filter types (comma separated list of string types, default: all types)
-// -d <type> : direct output for single type
-// -t <tmpfile> : temporary file for direct output (default: none, use stdout)
-// Types: save_slot,account,neighborhoods,sims,households,zones,streets,gameplay_data,custom_colors
+            Console.WriteLine($"Processing savegame: {options.SavegamePath}");
+            var saveGameData = LoadSaveGame(options.SavegamePath);
 
-bool isDirect = args.Contains("-d");
-string directType = null;
-if (isDirect)
-{
-    int directIndex = Array.IndexOf(args, "-d");
-    if (directIndex == -1)
-    {
-        directIndex = Array.IndexOf(args, "--direct");
-    }
-    if (directIndex != -1 && args.Length > directIndex + 1)
-    {
-        directType = args[directIndex + 1];
-    }
-    if (directType == null)
-    {
-        Console.WriteLine("FAILED - No type provided for direct output");
-        return;
-    }
-}
+            if (options.IsDirect)
+            {
+                HandleDirectOutput(saveGameData, options);
+            }
+            else
+            {
+                HandleFileOutput(saveGameData, options);
+            }
 
-bool split = args.Contains("-s");
-string filterarg = "save_slot,account,neighborhoods,sims,households";
-int filterindex = Array.IndexOf(args, "-f");
-if (filterindex == -1)
-{
-    filterindex = Array.IndexOf(args, "--filter");
-}
-if (filterindex != -1 && args.Length > filterindex + 1)
-{
-    filterarg = args[filterindex + 1];
-}
-string outputdir = null;
-int outputindex = Array.IndexOf(args, "-o");
-if (outputindex == -1)
-{
-    outputindex = Array.IndexOf(args, "--output");
-}
-if (outputindex != -1 && args.Length > outputindex + 1)
-{
-    outputdir = args[outputindex + 1];
-}
-if (outputdir == null)
-{
-    outputdir = Path.Combine(Path.GetDirectoryName(savegamepath), Path.GetFileNameWithoutExtension(savegamepath));
-}
-if (!Directory.Exists(outputdir))
-{
-    Directory.CreateDirectory(outputdir);
-}
-string outputfile = null;
-int outputfileindex = Array.IndexOf(args, "-t");
-if (outputfileindex == -1)
-{
-    outputfileindex = Array.IndexOf(args, "--tmpfile");
-}
-if (outputfileindex != -1 && args.Length > outputfileindex + 1)
-{
-    outputfile = args[outputfileindex + 1];
-}
+            Console.WriteLine("Operation completed successfully.");
+        }
+        catch (FileNotFoundException ex)
+        {
+            Console.WriteLine($"FAILED - File not found: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+        }
+    }
 
+    /// <summary>
+    /// Parses the command-line arguments and returns an Options object.
+    /// </summary>
+    private static Options ParseArguments(string[] args)
+    {
+        if (args.Length == 0)
+        {
+            Console.WriteLine("FAILED - No path provided.");
+            return null;
+        }
 
-//Load save
-int currentTime = Environment.TickCount;
-Package p = (Package)Package.OpenPackage(0, savegamepath, false);
-Predicate<IResourceIndexEntry> idel = r => r.ResourceType == 0x0000000D;
-IResourceIndexEntry iries = p.Find(idel);
-Stream s = p.GetResource(iries);
-TS4SaveGame.SaveGameData save = Serializer.Deserialize<TS4SaveGame.SaveGameData>(s);
-int loadTime = Environment.TickCount - currentTime;
+        var options = new Options();
+        options.SavegamePath = args[0];
 
+        // Parse command-line options using a utility method
+        var argMap = ParseArgMap(args.Skip(1).ToArray());
+        options.IsDirect = argMap.ContainsKey("-d");
+        options.Split = argMap.ContainsKey("-s");
 
-//Direct output
-if (isDirect && outputfile==null)
-{
+        options.Filter = argMap.TryGetValue("-f", out var filterValue)
+            ? filterValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            : new[] { "save_slot", "account", "neighborhoods", "sims", "households", "zones", "streets", "gameplay_data", "custom_colors" };
 
-    if (directType == "save_slot_name")
-    {
-        Console.WriteLine("SUCCESS:" + save.save_slot.slot_name);
-        return;
-    }
-    else if (directType == "save_slot")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save.save_slot, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        Console.WriteLine("SUCCESS:" + json);
-        return;
-    }
-    else if (directType == "account")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save.account, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        Console.WriteLine("SUCCESS:" + json);
-        return;
-    }
-    else if (directType == "neighborhoods")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save.neighborhoods, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        Console.WriteLine("SUCCESS:" + json);
-        return;
-    }
-    else if (directType == "sims")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save.sims, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        Console.WriteLine("SUCCESS:" + json);
-        return;
-    }
-    else if (directType == "households")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save.households, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        Console.WriteLine("SUCCESS:" + json);
-        return;
-    }
-    else if (directType == "full")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        Console.WriteLine("SUCCESS:" + json);
-        return;
-    }
-}else if (isDirect)
-{
+        options.OutputDir = argMap.TryGetValue("-o", out var outputDirValue)
+            ? outputDirValue
+            : Path.Combine(Path.GetDirectoryName(options.SavegamePath), Path.GetFileNameWithoutExtension(options.SavegamePath));
 
-    //Direct to file
-    if (directType == "save_slot_name")
-    {
-        File.WriteAllText(outputfile, save.save_slot.slot_name);
-        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
-        return;
-    }
-    else if (directType == "save_slot")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save.save_slot, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outputfile, json);
-        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
-        return;
-    }
-    else if (directType == "account")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save.account, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outputfile, json);
-        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
-        return;
-    }
-    else if (directType == "neighborhoods")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save.neighborhoods, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outputfile, json);
-        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
-        return;
-    }
-    else if (directType == "sims")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save.sims, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outputfile, json);
-        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
-        return;
-    }
-    else if (directType == "households")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save.households, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outputfile, json);
-        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
-        return;
-    }
-    else if (directType == "full")
-    {
-        string json = System.Text.Json.JsonSerializer.Serialize(save, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outputfile, json);
-        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
+        options.DirectType = argMap.TryGetValue("-d", out var directTypeValue) ? directTypeValue : null;
+        options.DirectFile = argMap.TryGetValue("-t", out var directFileValue) ? directFileValue : null;
 
-    }
-}
+        // Check for required direct output type
+        if (options.IsDirect && string.IsNullOrEmpty(options.DirectType))
+        {
+            Console.WriteLine("FAILED - No type provided for direct output.");
+            return null;
+        }
 
-//Convert and save
-if (!split)
-{
-    //Single file
-    string outfile = Path.Combine(outputdir, "savegame-full.json");
-    currentTime = Environment.TickCount;
-    string json = System.Text.Json.JsonSerializer.Serialize(save, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-    File.WriteAllText(outfile, json);
-    int saveTime = Environment.TickCount - currentTime;
-    Console.WriteLine($"SUCCESS - Saved {outfile} (Load: {loadTime}ms, Save: {saveTime}ms)");
-}
-else
-{
-    //Split into types
+        return options;
+    }
 
-    string[] filters = filterarg.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-    int totalSaved = 0;
-    currentTime = Environment.TickCount;
-    if (filters.Contains("save_slot"))
+    /// <summary>
+    /// Loads and deserializes the save game data.
+    /// </summary>
+    private static TS4SaveGame.SaveGameData LoadSaveGame(string path)
     {
-        string outfile = Path.Combine(outputdir, "save_slot.json");
-        string json = System.Text.Json.JsonSerializer.Serialize(save.save_slot, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outfile, json);
-        totalSaved++;
-        Console.WriteLine($"  Saved {outfile}");
-    }
-    if (filters.Contains("account"))
-    {
-        string outfile = Path.Combine(outputdir, "account.json");
-        string json = System.Text.Json.JsonSerializer.Serialize(save.account, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outfile, json);
-        totalSaved++;
-        Console.WriteLine($"  Saved {outfile}");
-    }
-    if (filters.Contains("neighborhoods"))
-    {
-        string outfile = Path.Combine(outputdir, "neighborhoods.json");
-        string json = System.Text.Json.JsonSerializer.Serialize(save.neighborhoods, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outfile, json);
-        totalSaved++;
-        Console.WriteLine($"  Saved {outfile}");
-    }
-    if (filters.Contains("sims"))
-    {
-        string outfile = Path.Combine(outputdir, "sims.json");
-        string json = System.Text.Json.JsonSerializer.Serialize(save.sims, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outfile, json);
-        totalSaved++;
-        Console.WriteLine($"  Saved {outfile}");
-    }
-    if (filters.Contains("households"))
-    {
-        string outfile = Path.Combine(outputdir, "households.json");
-        string json = System.Text.Json.JsonSerializer.Serialize(save.households, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outfile, json);
-        totalSaved++;
-        Console.WriteLine($"  Saved {outfile}");
-    }
-    if (filters.Contains("zones"))
-    {
-        string outfile = Path.Combine(outputdir, "zones.json");
-        string json = System.Text.Json.JsonSerializer.Serialize(save.zones, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outfile, json);
-        totalSaved++;
-        Console.WriteLine($"  Saved {outfile}");
-    }
-    if (filters.Contains("streets"))
-    {
-        string outfile = Path.Combine(outputdir, "streets.json");
-        string json = System.Text.Json.JsonSerializer.Serialize(save.streets, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outfile, json);
-        totalSaved++;
-        Console.WriteLine($"  Saved {outfile}");
-    }
-    if (filters.Contains("gameplay_data"))
-    {
-        string outfile = Path.Combine(outputdir, "gameplay_data.json");
-        string json = System.Text.Json.JsonSerializer.Serialize(save.gameplay_data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outfile, json);
-        totalSaved++;
-        Console.WriteLine($"  Saved {outfile}");
-    }
-    if (filters.Contains("custom_colors"))
-    {
-        string outfile = Path.Combine(outputdir, "custom_colors.json");
-        string json = System.Text.Json.JsonSerializer.Serialize(save.custom_colors, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outfile, json);
-        totalSaved++;
-        Console.WriteLine($"  Saved {outfile}");
-    }
-    int saveTime = Environment.TickCount - currentTime;
-    Console.WriteLine($"SUCCESS - Saved {totalSaved} files (Load: {loadTime}ms, Save: {saveTime}ms)");
+        if (!File.Exists(path))
+        {
+            throw new FileNotFoundException("The specified save game file was not found.", path);
+        }
 
+        Console.WriteLine("Loading save game...");
+        var startTime = Environment.TickCount;
+
+        using (var package = (Package)Package.OpenPackage(0, path, false))
+        {
+            var saveResourceEntry = package.Find(r => r.ResourceType == SavegameResourceType);
+            if (saveResourceEntry == null)
+            {
+                throw new InvalidOperationException("Could not find the save game resource within the package.");
+            }
+
+            using (var stream = package.GetResource(saveResourceEntry))
+            {
+                var save = Serializer.Deserialize<TS4SaveGame.SaveGameData>(stream);
+                var loadTime = Environment.TickCount - startTime;
+                Console.WriteLine($"Load successful. Time taken: {loadTime}ms");
+                return save;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles the output for a single, direct type to console or a file.
+    /// </summary>
+    private static void HandleDirectOutput(TS4SaveGame.SaveGameData save, Options options)
+    {
+        string outputData = GetSerializedDataByType(save, options.DirectType);
+        if (outputData == null)
+        {
+            Console.WriteLine($"FAILED - Unknown type: {options.DirectType}");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(options.DirectFile))
+        {
+            Console.WriteLine($"SUCCESS:{outputData}");
+        }
+        else
+        {
+            File.WriteAllText(options.DirectFile, outputData);
+            Console.WriteLine($"SUCCESS - Saved direct output to {options.DirectFile}");
+        }
+    }
+
+    /// <summary>
+    /// Handles saving output to one or more files.
+    /// </summary>
+    private static void HandleFileOutput(TS4SaveGame.SaveGameData save, Options options)
+    {
+        if (!Directory.Exists(options.OutputDir))
+        {
+            Directory.CreateDirectory(options.OutputDir);
+        }
+
+        var startTime = Environment.TickCount;
+        int filesSaved = 0;
+
+        if (options.Split)
+        {
+            var typesToSave = GetTypesToSave(save, options.Filter);
+            foreach (var type in typesToSave)
+            {
+                var outfile = Path.Combine(options.OutputDir, $"{type.Key}.json");
+                File.WriteAllText(outfile, type.Value);
+                Console.WriteLine($"  Saved {outfile}");
+                filesSaved++;
+            }
+        }
+        else
+        {
+            var outfile = Path.Combine(options.OutputDir, "savegame-full.json");
+            var json = JsonSerializer.Serialize(save, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(outfile, json);
+            filesSaved++;
+        }
+
+        var saveTime = Environment.TickCount - startTime;
+        Console.WriteLine($"SUCCESS - Saved {filesSaved} file(s). Time taken: {saveTime}ms");
+    }
+
+    /// <summary>
+    /// Gets the serialized data for a specific type.
+    /// </summary>
+    private static string GetSerializedDataByType(TS4SaveGame.SaveGameData save, string typeName)
+    {
+        var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+
+        return typeName switch
+        {
+            "save_slot_name" => save.save_slot.slot_name,
+            "save_slot" => JsonSerializer.Serialize(save.save_slot, jsonOptions),
+            "account" => JsonSerializer.Serialize(save.account, jsonOptions),
+            "neighborhoods" => JsonSerializer.Serialize(save.neighborhoods, jsonOptions),
+            "sims" => JsonSerializer.Serialize(save.sims, jsonOptions),
+            "households" => JsonSerializer.Serialize(save.households, jsonOptions),
+            "zones" => JsonSerializer.Serialize(save.zones, jsonOptions),
+            "streets" => JsonSerializer.Serialize(save.streets, jsonOptions),
+            "gameplay_data" => JsonSerializer.Serialize(save.gameplay_data, jsonOptions),
+            "custom_colors" => JsonSerializer.Serialize(save.custom_colors, jsonOptions),
+            "full" => JsonSerializer.Serialize(save, jsonOptions),
+            _ => null
+        };
+    }
+
+    /// <summary>
+    /// Gets a dictionary of type names and their serialized JSON strings.
+    /// </summary>
+    private static Dictionary<string, string> GetTypesToSave(TS4SaveGame.SaveGameData save, string[] filters)
+    {
+        var types = new Dictionary<string, object>
+        {
+            ["save_slot"] = save.save_slot,
+            ["account"] = save.account,
+            ["neighborhoods"] = save.neighborhoods,
+            ["sims"] = save.sims,
+            ["households"] = save.households,
+            ["zones"] = save.zones,
+            ["streets"] = save.streets,
+            ["gameplay_data"] = save.gameplay_data,
+            ["custom_colors"] = save.custom_colors,
+        };
+
+        var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+        var filteredData = new Dictionary<string, string>();
+
+        foreach (var filter in filters)
+        {
+            if (types.TryGetValue(filter, out var data))
+            {
+                filteredData[filter] = JsonSerializer.Serialize(data, jsonOptions);
+            }
+        }
+
+        return filteredData;
+    }
+
+    /// <summary>
+    /// Utility method to parse command-line arguments into a dictionary.
+    /// </summary>
+    private static Dictionary<string, string> ParseArgMap(string[] args)
+    {
+        var argMap = new Dictionary<string, string>();
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i].StartsWith("-"))
+            {
+                var key = args[i].ToLower();
+                var value = (i + 1 < args.Length && !args[i + 1].StartsWith("-")) ? args[++i] : string.Empty;
+                argMap[key] = value;
+            }
+        }
+        return argMap;
+    }
+
+    /// <summary>
+    /// A helper class to hold parsed command-line options.
+    /// </summary>
+    private class Options
+    {
+        public string SavegamePath { get; set; }
+        public bool IsDirect { get; set; }
+        public bool Split { get; set; }
+        public string[] Filter { get; set; }
+        public string OutputDir { get; set; }
+        public string DirectType { get; set; }
+        public string DirectFile { get; set; }
+    }
 }
