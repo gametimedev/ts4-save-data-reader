@@ -28,7 +28,29 @@ if (!File.Exists(savegamepath))
 // -o <outputdir> : output directory (default: new subfolder next to savefile)
 // -s <split> : split into type jsons (default: false)
 // -f <filter> : filter types (comma separated list of string types, default: all types)
+// -d <type> : direct output for single type
+// -t <tmpfile> : temporary file for direct output (default: none, use stdout)
 // Types: save_slot,account,neighborhoods,sims,households,zones,streets,gameplay_data,custom_colors
+
+bool isDirect = args.Contains("-d");
+string directType = null;
+if (isDirect)
+{
+    int directIndex = Array.IndexOf(args, "-d");
+    if (directIndex == -1)
+    {
+        directIndex = Array.IndexOf(args, "--direct");
+    }
+    if (directIndex != -1 && args.Length > directIndex + 1)
+    {
+        directType = args[directIndex + 1];
+    }
+    if (directType == null)
+    {
+        Console.WriteLine("FAILED - No type provided for direct output");
+        return;
+    }
+}
 
 bool split = args.Contains("-s");
 string filterarg = "save_slot,account,neighborhoods,sims,households";
@@ -59,6 +81,16 @@ if (!Directory.Exists(outputdir))
 {
     Directory.CreateDirectory(outputdir);
 }
+string outputfile = null;
+int outputfileindex = Array.IndexOf(args, "-t");
+if (outputfileindex == -1)
+{
+    outputfileindex = Array.IndexOf(args, "--tmpfile");
+}
+if (outputfileindex != -1 && args.Length > outputfileindex + 1)
+{
+    outputfile = args[outputfileindex + 1];
+}
 
 
 //Load save
@@ -69,6 +101,106 @@ IResourceIndexEntry iries = p.Find(idel);
 Stream s = p.GetResource(iries);
 TS4SaveGame.SaveGameData save = Serializer.Deserialize<TS4SaveGame.SaveGameData>(s);
 int loadTime = Environment.TickCount - currentTime;
+
+
+//Direct output
+if (isDirect && outputfile==null)
+{
+
+    if (directType == "save_slot_name")
+    {
+        Console.WriteLine("SUCCESS:" + save.save_slot.slot_name);
+        return;
+    }
+    else if (directType == "save_slot")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save.save_slot, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        Console.WriteLine("SUCCESS:" + json);
+        return;
+    }
+    else if (directType == "account")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save.account, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        Console.WriteLine("SUCCESS:" + json);
+        return;
+    }
+    else if (directType == "neighborhoods")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save.neighborhoods, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        Console.WriteLine("SUCCESS:" + json);
+        return;
+    }
+    else if (directType == "sims")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save.sims, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        Console.WriteLine("SUCCESS:" + json);
+        return;
+    }
+    else if (directType == "households")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save.households, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        Console.WriteLine("SUCCESS:" + json);
+        return;
+    }
+    else if (directType == "full")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        Console.WriteLine("SUCCESS:" + json);
+        return;
+    }
+}else if (isDirect)
+{
+
+    //Direct to file
+    if (directType == "save_slot_name")
+    {
+        File.WriteAllText(outputfile, save.save_slot.slot_name);
+        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
+        return;
+    }
+    else if (directType == "save_slot")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save.save_slot, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outputfile, json);
+        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
+        return;
+    }
+    else if (directType == "account")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save.account, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outputfile, json);
+        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
+        return;
+    }
+    else if (directType == "neighborhoods")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save.neighborhoods, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outputfile, json);
+        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
+        return;
+    }
+    else if (directType == "sims")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save.sims, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outputfile, json);
+        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
+        return;
+    }
+    else if (directType == "households")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save.households, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outputfile, json);
+        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
+        return;
+    }
+    else if (directType == "full")
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(save, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(outputfile, json);
+        Console.WriteLine($"SUCCESS - Saved {outputfile} (Load: {loadTime}ms)");
+
+    }
+}
 
 //Convert and save
 if (!split)

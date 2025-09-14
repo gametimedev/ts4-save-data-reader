@@ -6,3 +6,4 @@ SaveGameReader
 /.vs
 /.vs/*
 ts4-save-data-reader.sln
+data_old

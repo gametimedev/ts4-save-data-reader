@@ -3,19 +3,27 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 
+const validTypes = [
+    "save_slot",
+    "account",
+    "neighborhoods",
+    "sims",
+    "households",
+    "full"
+];
 
 function readSaveFileData(saveFilePath) {
     if (!saveFilePath) {
         throw new Error('No save file path provided');
-    }else if(!fs.existsSync(saveFilePath)){
+    } else if (!fs.existsSync(saveFilePath)) {
         throw new Error('Save file does not exist');
     }
 
     let executablePath;
     if (os.platform() === 'win32') {
-        executablePath = path.join(__dirname, 'data' ,'SaveToJson.exe');
+        executablePath = path.join(__dirname, 'data', 'SaveToJson.exe');
     } else if (os.platform() === 'darwin') {
-        executablePath = path.join(__dirname, 'data' ,'SaveToJson');
+        executablePath = path.join(__dirname, 'data', 'SaveToJson');
     } else {
         throw new Error('Unsupported OS');
     }
@@ -49,4 +57,15 @@ function readSaveFileData(saveFilePath) {
     });
 }
 
-module.exports = {readSaveFileData};
+function getInfoByType(type) {
+    if (!validTypes.includes(type)) {
+        throw new Error('Invalid type provided');
+    }
+
+}
+
+function getSaveFileName(saveFilePath) {
+
+}
+
+module.exports = { readSaveFileData };
