@@ -96,12 +96,12 @@ function extractInfoToFolder(filepath, folderPath, filter) {
 function getExecutablePath() {
     let executablePath;
     if (os.platform() === 'win32') {
-        executablePath = path.join(__dirname, 'data', 'SaveGameReader.exe');
+        executablePath = path.join(__dirname, 'data', 'win', 'SaveGameReader.exe');
     } else if (os.platform() === 'darwin') {
         if (os.arch() === 'arm64') {
-            executablePath = path.join(__dirname, 'data', 'SaveGameReader_arm');
+            executablePath = path.join(__dirname, 'data', 'osx-arm64', 'SaveGameReader');
         } else {
-            executablePath = path.join(__dirname, 'data', 'SaveGameReader_x64');
+            executablePath = path.join(__dirname, 'data', 'osx-x64', 'SaveGameReader');
         }
     } else {
         throw new Error('Unsupported OS');
