@@ -185,7 +185,7 @@ public class SavegameExtractor
 
         return typeName switch
         {
-            "save_slot_name" => save.save_slot.slot_name,
+            "save_slot_name" => "{\"name\":\""+save.save_slot.slot_name+"\"}",
             "save_slot" => JsonSerializer.Serialize(save.save_slot, jsonOptions),
             "account" => JsonSerializer.Serialize(save.account, jsonOptions),
             "neighborhoods" => JsonSerializer.Serialize(save.neighborhoods, jsonOptions),

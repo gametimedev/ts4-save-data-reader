@@ -4,6 +4,7 @@ const os = require('os');
 const fs = require('fs');
 
 const validTypes = [
+    "save_slot_name",
     "save_slot",
     "account",
     "neighborhoods",
@@ -12,25 +13,23 @@ const validTypes = [
     "full"
 ];
 
-function readSaveFileData(saveFilePath) {
-    if (!saveFilePath) {
-        throw new Error('No save file path provided');
-    } else if (!fs.existsSync(saveFilePath)) {
-        throw new Error('Save file does not exist');
+function getInfoByType(filepath, type) {
+    if (!validTypes.includes(type)) {
+        throw new Error('Invalid type provided');
     }
 
-    let executablePath;
-    if (os.platform() === 'win32') {
-        executablePath = path.join(__dirname, 'data', 'SaveToJson.exe');
-    } else if (os.platform() === 'darwin') {
-        executablePath = path.join(__dirname, 'data', 'SaveToJson');
-    } else {
-        throw new Error('Unsupported OS');
-    }
     const tempDir = os.tmpdir();
     const outputFileName = `output_ts4_save_${Date.now()}.json`;
     const outputPath = path.join(tempDir, outputFileName);
-    const args = [saveFilePath, outputPath];
+
+    let args = [
+        filepath,
+        "-t", outputPath,
+        "-d", type
+    ];
+
+    let executablePath = getExecutablePath();
+
     return new Promise((resolve, reject) => {
         execFile(executablePath, args, (error, stdout, stderr) => {
             if (error) {
@@ -49,23 +48,65 @@ function readSaveFileData(saveFilePath) {
                         if (err) {
                             return reject(err);
                         }
+
+                        //Buffer to json
+                        data = JSON.parse(data.toString());
+
                         resolve(data);
                     });
                 });
             });
         });
     });
+
+
 }
 
-function getInfoByType(type) {
-    if (!validTypes.includes(type)) {
-        throw new Error('Invalid type provided');
+function extractInfoToFolder(filepath, folderPath, filter) {
+    if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true });
+    }
+    if (!fs.existsSync(folderPath) || !fs.lstatSync(folderPath).isDirectory()) {
+        throw new Error('Provided folder path is not a directory');
     }
 
+    let args = [
+        filepath,
+        "-o", folderPath,
+        "-s"
+    ];
+    if (filter) {
+        args.push("-f", filter);
+    }
+
+    let executablePath = getExecutablePath();
+
+    return new Promise((resolve, reject) => {
+        execFile(executablePath, args, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error executing file: ${error}`);
+                return reject(error);
+            }
+            resolve(true);
+        });
+    });
+
 }
 
-function getSaveFileName(saveFilePath) {
-
+function getExecutablePath() {
+    let executablePath;
+    if (os.platform() === 'win32') {
+        executablePath = path.join(__dirname, 'data', 'SaveGameReader.exe');
+    } else if (os.platform() === 'darwin') {
+        if (os.arch() === 'arm64') {
+            executablePath = path.join(__dirname, 'data', 'SaveGameReader_arm');
+        } else {
+            executablePath = path.join(__dirname, 'data', 'SaveGameReader_x64');
+        }
+    } else {
+        throw new Error('Unsupported OS');
+    }
+    return executablePath;
 }
 
-module.exports = { readSaveFileData };
+module.exports = { getInfoByType, extractInfoToFolder };
