@@ -167,7 +167,7 @@ public class SavegameExtractor
         else
         {
             var outfile = Path.Combine(options.OutputDir, "savegame-full.json");
-            var json = JsonSerializer.Serialize(save, new JsonSerializerOptions { WriteIndented = true });
+            var json = JsonSerializer.Serialize(save, new JsonSerializerOptions { WriteIndented = true , NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.WriteAsString });
             File.WriteAllText(outfile, json);
             filesSaved++;
         }
@@ -181,7 +181,7 @@ public class SavegameExtractor
     /// </summary>
     private static string GetSerializedDataByType(TS4SaveGame.SaveGameData save, string typeName)
     {
-        var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+        var jsonOptions = new JsonSerializerOptions { WriteIndented = true, NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.WriteAsString };
 
         return typeName switch
         {
@@ -218,7 +218,7 @@ public class SavegameExtractor
             ["custom_colors"] = save.custom_colors,
         };
 
-        var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+        var jsonOptions = new JsonSerializerOptions { WriteIndented = true , NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.WriteAsString };
         var filteredData = new Dictionary<string, string>();
 
         foreach (var filter in filters)
