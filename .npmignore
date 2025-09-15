@@ -7,3 +7,9 @@ SaveGameReader
 /.vs/*
 ts4-save-data-reader.sln
 data_old
+data_old/
+/data_old/*
+/data_old/
+s4pi/
+/s4pi/
+/s4pi/*
