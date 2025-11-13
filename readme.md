@@ -1,5 +1,3 @@
-
-
 # TS4 Save Data Reader
 
 TS4 Save Data Reader is an npm package to extract and read data from The Sims 4 save files using a native executable. It supports extracting specific data types and outputting structured data to folders or JSON.
@@ -69,7 +67,52 @@ Extracts all (or filtered) info from the save file and writes it to the specifie
 - `neighborhoods`
 - `sims`
 - `households`
+- `zones`
+- `streets`
+- `gameplay_data`
+- `custom_colors`
 - `full`
+
+
+## Command-Line Utility
+
+The `SavegameExtractor` class in the `Program.cs` file provides a command-line utility to process Sims 4 save files. Below are the available options:
+
+### Usage
+
+```sh
+SaveGameReader <savegame_path> [options]
+```
+
+### Options
+
+- `-d <type>`: Direct output of a specific type to the console or a file (requires `-t` for file output).
+- `-t <file>`: Specifies the file path for direct output.
+- `-s`: Splits the output into multiple files based on data types.
+- `-o <folder>`: Specifies the output folder for extracted data.
+- `-f <filters>`: Filters the data types to extract (comma-separated).
+
+### Example Commands
+
+#### Direct Output to Console
+```sh
+SaveGameReader "C:\\path\\to\\savefile.save" -d account
+```
+
+#### Direct Output to File
+```sh
+SaveGameReader "C:\\path\\to\\savefile.save" -d account -t "C:\\path\\to\\output\\account.json"
+```
+
+#### Extract All Data to Folder
+```sh
+SaveGameReader "C:\\path\\to\\savefile.save" -o "C:\\path\\to\\output"
+```
+
+#### Extract Filtered Data to Folder
+```sh
+SaveGameReader "C:\\path\\to\\savefile.save" -o "C:\\path\\to\\output" -f sims,households
+```
 
 
 ## Credit

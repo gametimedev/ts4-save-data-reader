@@ -82,13 +82,24 @@ function extractInfoToFolder(filepath, folderPath, filter) {
     let executablePath = getExecutablePath();
 
     return new Promise((resolve, reject) => {
-        execFile(executablePath, args, (error, stdout, stderr) => {
+        if (os.platform() === 'darwin') {
+            const dotnetArgs = [executablePath, ...args];
+            execFile('dotnet', dotnetArgs, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error executing file with dotnet: ${error}`);
+                return reject(error);
+            }
+            resolve(true);
+            });
+        } else {
+            execFile(executablePath, args, (error, stdout, stderr) => {
             if (error) {
                 console.error(`Error executing file: ${error}`);
                 return reject(error);
             }
             resolve(true);
-        });
+            });
+        }
     });
 
 }
@@ -99,9 +110,9 @@ function getExecutablePath() {
         executablePath = path.join(__dirname, 'data', 'win', 'SaveGameReader.exe');
     } else if (os.platform() === 'darwin') {
         if (os.arch() === 'arm64') {
-            executablePath = path.join(__dirname, 'data', 'osx-arm64', 'SaveGameReader');
+            executablePath = path.join(__dirname, 'data', 'osx-arm64', 'SaveGameReader.dll');
         } else {
-            executablePath = path.join(__dirname, 'data', 'osx-x64', 'SaveGameReader');
+            executablePath = path.join(__dirname, 'data', 'osx-x64', 'SaveGameReader.dll');
         }
     } else {
         throw new Error('Unsupported OS');
