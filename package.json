@@ -2,8 +2,14 @@
     "name": "ts4-save-data-reader",
     "version": "1.0.3",
     "main": "index.js",
-    "repository": { "type": "git", "url": "https://github.com/gametimedev/ts4-save-data-reader" },
-    "keywords": ["save", "sims"],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gametimedev/ts4-save-data-reader.git"
+    },
+    "keywords": [
+        "save",
+        "sims"
+    ],
     "author": "GameTimeDev",
     "license": "GNU",
     "description": "Reads a Sims 4 save game file and outputs the data from the save game entry"
