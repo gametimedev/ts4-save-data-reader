@@ -10,6 +10,10 @@
         "save",
         "sims"
     ],
+    "scripts": {
+        "macArm": "dotnet publish -c Release -r osx-arm64 --self-contained true",
+        "macX64": "dotnet publish -c Release -r osx-x64 --self-contained true"
+    },
     "author": "GameTimeDev",
     "license": "GNU",
     "description": "Reads a Sims 4 save game file and outputs the data from the save game entry"
