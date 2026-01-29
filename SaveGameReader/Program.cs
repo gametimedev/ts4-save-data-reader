@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using EA.Sims4.Persistence;
 using ProtoBuf;
 using s4pi.Interfaces;
 using s4pi.Package;
@@ -23,6 +24,13 @@ public class SavegameExtractor
             if (options == null) return;
 
             Console.WriteLine($"Processing savegame: {options.SavegamePath}");
+  
+            if(options.IsDirect && options.DirectType== "save_slot_name")
+            {
+                Console.WriteLine($"SUCCESS:"+ "{\"name\":\"" + GetSaveSlotName(options.SavegamePath) + "\"}");
+                return;
+            }
+
             var saveGameData = LoadSaveGame(options.SavegamePath);
 
             if (options.IsDirect)
@@ -44,6 +52,155 @@ public class SavegameExtractor
         {
             Console.WriteLine($"An unexpected error occurred: {ex.Message}");
         }
+    }
+
+
+    private static String GetSaveSlotName(String saveFilePath)
+    {
+        var startTime = Environment.TickCount;
+        using (var package = (Package)Package.OpenPackage(0, saveFilePath, false))
+        {
+            var saveResourceEntry = package.Find(r => r.ResourceType == SavegameResourceType);
+            if (saveResourceEntry == null)
+            {
+                throw new InvalidOperationException("Could not find the save game resource within the package.");
+            }
+
+            using (var stream = package.GetResource(saveResourceEntry))
+            {
+                var wrapper = Serializer.Deserialize<TS4SaveGame.SaveGameDataDescOnly>(stream);
+                var slotName = wrapper.save_slot.slot_name;
+                var loadTime = Environment.TickCount - startTime;
+                Console.WriteLine($"Load successful. Time taken: {loadTime}ms");
+               return slotName;
+            }
+
+        }
+        throw new Exception("Unable to read save files data entry!");
+    }
+
+    private static SimsDataEntry GetDataEntry(String saveFilePath)
+    {
+        using (var package = (Package)Package.OpenPackage(0, saveFilePath, false))
+        {
+            var saveResourceEntry = package.Find(r => r.ResourceType == SavegameResourceType);
+            if (saveResourceEntry == null)
+            {
+                throw new InvalidOperationException("Could not find the save game resource within the package.");
+            }
+            return new SimsDataEntry(package,saveResourceEntry);
+        }
+        throw new Exception("Unable to read save files data entry!");
+    }
+
+    private static void test(String saveFilePath,bool isSpecial)
+    {
+        var startTime = Environment.TickCount;
+        using (var package = (Package)Package.OpenPackage(0, saveFilePath, false))
+        {
+            var saveResourceEntry = package.Find(r => r.ResourceType == SavegameResourceType);
+            if (saveResourceEntry == null)
+            {
+                throw new InvalidOperationException("Could not find the save game resource within the package.");
+            }
+
+            using (var stream = package.GetResource(saveResourceEntry))
+            {
+                if (isSpecial)
+                {
+                    var wrapper = Serializer.Deserialize<TS4SaveGame.SaveGameDataDescOnly>(stream);
+                    var slotName = wrapper.save_slot.slot_name;
+                    Console.WriteLine(
+                        slotName);
+                }
+                else
+                {
+                    var save = Serializer.Deserialize<TS4SaveGame.SaveGameData>(stream);
+                }
+                var loadTime = Environment.TickCount - startTime;
+                Console.WriteLine($"Load successful. Time taken: {loadTime}ms");
+                //return save;
+            }
+
+        }
+        throw new Exception("Unable to read save files data entry!");
+    }
+
+    public static string GetSaveSlotName(Stream stream)
+    {
+        using (var reader = ProtoReader.Create(stream, null))
+        {
+            int fieldNumber;
+            // 1. Traverse the top-level (SaveGameData)
+            while ((fieldNumber = reader.ReadFieldHeader()) > 0)
+            {
+                // REPLACE '1' with the actual ProtoMember tag of SaveSlotData 
+                // inside your SaveGameData class
+                if (fieldNumber == 1)
+                {
+                    // 2. We found the SaveSlotData object. We must "Enter" it.
+                    SubItemToken token = ProtoReader.StartSubItem(reader);
+
+                    int subField;
+                    while ((subField = reader.ReadFieldHeader()) > 0)
+                    {
+                        if (subField == 9) // slot_name
+                        {
+                            // Successfully found the string
+                            return reader.ReadString();
+                        }
+                        else
+                        {
+                            // Skip other fields in SaveSlotData (like large arrays)
+                            reader.SkipField();
+                        }
+                    }
+                    ProtoReader.EndSubItem(token, reader);
+                }
+                else
+                {
+                    // Skip other top-level fields
+                    reader.SkipField();
+                }
+            }
+        }
+        return null;
+    }
+    public static AccountData GetAccountHeader(Stream stream)
+    {
+        var account = new AccountData();
+        using (var reader = ProtoReader.Create(stream, null))
+        {
+            int fieldNumber;
+            // Iterate through tags in the root object
+            while ((fieldNumber = reader.ReadFieldHeader()) > 0)
+            {
+                switch (fieldNumber)
+                {
+                    case 1: // nucleus_id
+                        account.nucleus_id = reader.ReadUInt64();
+                        break;
+                    case 2: // persona_name
+                        account.persona_name = reader.ReadString();
+                        break;
+                    case 10: // client_version
+                        account.client_version = reader.ReadString();
+                        break;
+                    default:
+                        // Skip any large fields (like lists or byte arrays) 
+                        // without fully deserializing them
+                        reader.SkipField();
+                        break;
+                }
+
+                // Custom logic: Stop reading once we have the persona name
+                if (!string.IsNullOrEmpty(account.persona_name))
+                {
+                    return account;
+                }
+            }
+        }
+        return account;
     }
 
     /// <summary>
@@ -262,5 +419,27 @@ public class SavegameExtractor
         public string OutputDir { get; set; }
         public string DirectType { get; set; }
         public string DirectFile { get; set; }
+    }
+
+
+    private class SimsDataEntry
+    {
+        public SimsDataEntry(Package pkg, IResourceIndexEntry ie)
+        {
+            this.packageObject = pkg;
+            this.entry = ie;
+        }
+        public IResourceIndexEntry entry { get; set; }
+        public Package packageObject { get; set; }
+
+    }
+
+
+    [ProtoContract]
+    public class SaveGameDataLight
+    {
+        // Assuming the SaveSlotData is at Tag 1 in your full SaveGameData class
+        [ProtoMember(1)]
+        public SaveSlotDataDescOnly save { get; set; }
     }
 }
