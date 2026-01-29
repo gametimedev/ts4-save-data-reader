@@ -4718,6 +4718,11 @@ message SaveSlotDataDescOnly {
   GameContentData game_content_data = 17;
 }
 
+message SaveSlotDataNameOnly {
+  fixed64 slot_id = 1;
+  string slot_name = 9;
+}
+
 message SaveListData {
   fixed64 nucleus_id = 1;
   repeated fixed64 slot_ids = 2;
@@ -5203,6 +5208,11 @@ message SaveGameDataDescOnly {
   uint32 guid = 1;
   SaveSlotDataDescOnly save_slot = 2;
   repeated HouseholdDataDescOnly households = 5;
+}
+
+message SaveGameDataNameOnly {
+  uint32 guid = 1;
+  SaveSlotDataNameOnly save_slot = 2;
 }
 
 message GenusData {

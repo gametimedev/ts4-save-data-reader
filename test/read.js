@@ -14,7 +14,7 @@ async function readSims4Data() {
         // Force resolve all references
         root.resolveAll();
 
-        const SaveGameType = root.lookupType("EA.Sims4.SaveGameDataPrimary");
+        const SaveGameType = root.lookupType("EA.Sims4.SaveGameDataNameOnly");
         const buffer = fs.readFileSync(savePath);
         const message = SaveGameType.decode(buffer);
 
