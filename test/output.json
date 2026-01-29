@@ -1,0 +1,258 @@
+{
+  "uninstalledRegionIds": [],
+  "tutorialTips": [],
+  "simsRemovedFromTravelGroups": [],
+  "guid": 3368419328,
+  "saveSlot": {
+    "neighboorhoods": [],
+    "zones": [],
+    "slotId": "3",
+    "lastNeighborhood": "0",
+    "lastZone": "0",
+    "isMigrated": true,
+    "gameplayData": {
+      "onceOnlyDramaNodes": [],
+      "worldGameTime": "13832191",
+      "travelSituationSeed": null,
+      "cameraData": {
+        "targetId": "0",
+        "followMode": false,
+        "zoneId": "600128009917306062",
+        "householdId": "600128009917306906"
+      },
+      "isPhoneSilenced": true,
+      "careerChoicesSeed": "0",
+      "enableAutogenerationSameSexPreference": true,
+      "clubService": null,
+      "dramaScheduleService": {
+        "dramaNodesOnPermanentCooldown": [],
+        "startupDramaNodeBucketsUsed": [
+          "73",
+          "86",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31"
+        ],
+        "cooldownGroupsOnPermanentCooldown": []
+      },
+      "relgraphService": null,
+      "callToActionService": {
+        "permanentlyDisabledIds": []
+      },
+      "relationshipService": {},
+      "adoptionService": {},
+      "hiddenSimService": {},
+      "seasonService": null,
+      "lotDecorationService": null,
+      "holidayService": null,
+      "styleService": {},
+      "trendService": {
+        "currentTrendTags": [
+          61544,
+          61545,
+          61509,
+          61543
+        ],
+        "nextUpdateTicks": "18152191"
+      },
+      "rabbitHoleService": {},
+      "narrativeService": {
+        "activeNarratives": [],
+        "completedNarratives": [],
+        "streetsToCleanup": [],
+        "streetsNeedCleanup": false
+      },
+      "objectLostAndFound": {},
+      "landlordService": null,
+      "globalPolicyService": {},
+      "roommateService": null,
+      "organizationService": {},
+      "cullingService": {
+        "simsToCull": []
+      },
+      "storyProgressionService": {
+        "universityAction": {
+          "nextUpdateTime": "14760000"
+        }
+      },
+      "streetService": null,
+      "regionService": {},
+      "lifestyleService": {
+        "hiddenLifestyles": [],
+        "hasSeenDailyCapNotification": false,
+        "hasSeenInProgressNotification": false,
+        "hasSeenHiddenNotification": false
+      },
+      "abTestService": null,
+      "liveEventService": {},
+      "animalService": null,
+      "purchasePickerService": {},
+      "calendarService": {},
+      "socialMediaService": {
+        "simsWithNewPosts": [],
+        "simsWithNewMessages": []
+      },
+      "graduationService": null,
+      "venueGameService": null,
+      "promService": null,
+      "fashionTrendService": null,
+      "lunarCycleService": {
+        "currentPhase": 6,
+        "phaseStartTime": "13590000"
+      },
+      "clanService": null,
+      "careerService": {
+        "subvenueZoneIds": []
+      },
+      "horseCompetitionService": {},
+      "tutorialService": {},
+      "simSecretsService": null,
+      "multiUnitEventService": {},
+      "multiUnitOwnershipService": null
+    },
+    "slotName": "My Saved Game 2",
+    "timestamp": "0",
+    "activeHouseholdId": "600128009917306906",
+    "nucleusId": "2784164473",
+    "s4GuidSeed": "0",
+    "compatibilityVersion": 11700,
+    "triggerTutorialDramaNode": false,
+    "tutorialMode": 0,
+    "gameContentData": {
+      "requiredPackIds": [
+        1,
+        5,
+        12,
+        14,
+        19,
+        24,
+        35,
+        45,
+        50,
+        56,
+        76
+      ],
+      "cdsPatchBaseChangelists": [
+        11047934,
+        11047934,
+        11047940,
+        11047940
+      ],
+      "cdsContentPatchMounted": false
+    },
+    "appliedAgingFixup": false
+  },
+  "account": {
+    "nucleusId": "2784164473",
+    "personaName": "LowLifeLp",
+    "email": "",
+    "created": "1757167872",
+    "lastLogin": "1757167872",
+    "uiOptions": {
+      "isNewGame": false,
+      "wasNotificationAlertShown": false
+    },
+    "clientVersion": "1.117.244.1020",
+    "saveSlotId": "0",
+    "gameplayAccountData": {
+      "achievementData": {
+        "milestonesCompleted": [
+          10710,
+          33358,
+          33359
+        ],
+        "objectivesCompleted": [
+          14659,
+          33203,
+          33207,
+          33001,
+          33356,
+          33357
+        ],
+        "data": {
+          "travelData": [
+            "600128009917305381",
+            "600128009917303942",
+            "600128009917304071",
+            "600128009917304010",
+            "600128009917306062",
+            "600128009917301332",
+            "600128009917300756",
+            "600128009917309595"
+          ],
+          "clubBucksData": {
+            "amount": 0
+          },
+          "timeInGatherings": {
+            "simMinutes": 0
+          },
+          "encouragedInteractionsStarted": null,
+          "moodData": {}
+        }
+      },
+      "gameplayOptions": {
+        "autonomyLevel": "FULL",
+        "selectedSimAutonomyEnabled": false,
+        "simLifeSpan": "NORMAL",
+        "agingEnabled": false,
+        "lessonsEnabled": false,
+        "tutorialSituationEnabled": false,
+        "resetLessons": false,
+        "allowAging": "DISABLED",
+        "unplayedAgingEnabled": false,
+        "npcPopulationEnabled": false,
+        "maxPlayerPopulation": 80,
+        "seasonLength": "NORMAL_SEASON",
+        "rainOptions": "WEATHER_ENABLED",
+        "snowOptions": "WEATHER_ENABLED",
+        "temperatureEffectsEnabled": false,
+        "initialSeason": "SUMMER",
+        "startAllSimsOptedOutOfFame": false,
+        "npcCivicVotingEnabled": false,
+        "ecoFootprintGameplayEnabled": false,
+        "buildEcoEffectsEnabled": false,
+        "icyConditionsEnabled": false,
+        "thunderSnowStormsEnabled": false,
+        "lifestylesEffectsEnabled": false,
+        "dustSystemEnabled": false,
+        "creatureAgingEnabled": false,
+        "storyProgressionEffectsEnabled": false,
+        "restrictNpcWerewolves": false,
+        "showWants": false,
+        "acneEnabled": false,
+        "lunarCycleLength": "TWO_DAY",
+        "lunarPhaseLock": "NEW_MOON",
+        "disableLunarEffects": false,
+        "npcRelationshipAutonomyEnabled": false,
+        "selfDiscoveryEnabled": false,
+        "careerLayOffEnabled": false,
+        "multiUnitEventsEnabled": false,
+        "resetPivotalMoments": false,
+        "pivotalMomentsEnabled": false
+      },
+      "cheatsEnabled": true,
+      "cheatsEverEnabled": true
+    },
+    "clientVersionAtCreation": "1.117.244.1020",
+    "numberOfSaves": "41",
+    "numberOfSavesMods": "41",
+    "numberOfSavesScriptMods": "41",
+    "isPackUsageTelemetryVersion": true
+  },
+  "objectFallbacks": {},
+  "gameplayData": {
+    "dailySimInfoCreationCount": 1
+  },
+  "relgraph": null,
+  "customColors": {},
+  "protectedHouseholdsStoryProgressionRuleSet": {
+    "enabled": false
+  },
+  "unprotectedHouseholdsStoryProgressionRuleSet": {
+    "enabled": true
+  }
+}

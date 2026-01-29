@@ -16,5 +16,8 @@
     },
     "author": "GameTimeDev",
     "license": "GNU",
-    "description": "Reads a Sims 4 save game file and outputs the data from the save game entry"
+    "description": "Reads a Sims 4 save game file and outputs the data from the save game entry",
+    "devDependencies": {
+        "protobufjs": "^8.0.0"
+    }
 }
