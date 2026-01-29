@@ -50,6 +50,8 @@ message AnimationEventHandler {
 
 message AnimationRequestBlock {
   bytes arb_data = 1;
+  repeated AnimationEventHandler event_handlers = 2;
+  repeated ManagerObjectId objects_to_reset = 3;
   bool is_interruptible = 4;
   bool should_analyze = 5;
 }
@@ -74,10 +76,14 @@ message FocusEvent {
   uint32 joint_name_hash = 6;
   uint64 target_id = 7;
   Vector3 offset = 8;
+  repeated CurveData distance_curve = 9;
+  repeated CurveData facing_curve = 10;
   uint64 source_id = 11;
 }
 
 message ConfigureAwarenessActor {
+  repeated AwarenessChannelName channels_to_remove = 3;
+  repeated ChannelOptions channels_to_configure = 4;
   float proximity_inner_radius = 5;
   float proximity_outer_radius = 6;
 }
@@ -95,6 +101,7 @@ message ChannelOptions {
 }
 
 message ConfigureAwarenessSourceObject {
+  repeated GameplayChannelValue gameplay_channel_values = 3;
   float audio_volume_multiplier = 4;
   float audio_full_volume_radius = 5;
   float audio_falloff_radius = 6;
@@ -123,6 +130,7 @@ message ProceduralControl {
 }
 
 message ProceduralAnimationData {
+  repeated ProceduralControl controls = 1;
 }
 
 message ProceduralControlRotation {
@@ -159,7 +167,10 @@ message ConnectedNeighborhoodLot {
 }
 
 message ZoneConnectedData {
+  GameInstanceInfoPB instance_info = 1;
   uint32 active_lot_id = 2;
+  repeated ZoneConnectedLotVersionData lot_versions = 3;
+  repeated ConnectedNeighborhoodLot neighborhood_lots = 4;
 }
 
 message GSI_Open {
@@ -300,6 +311,7 @@ message PlexRatingMessage {
 }
 
 message PlexRatingUpdate {
+  repeated PlexRatingMessage ratings = 1;
 }
 
 message LotValueMessage {
@@ -311,6 +323,7 @@ message LotValueMessage {
 
 message LotValueUpdate {
   uint64 zone_id = 1;
+  repeated LotValueMessage lot_values = 2;
   PlexRatingUpdate plex_rating_update = 3;
   bool update_cache = 4;
 }
@@ -322,6 +335,7 @@ message SetRentPriceData {
 }
 
 message InitialRentPriceUpdate {
+  repeated SetRentPriceData rent_prices = 1;
 }
 
 enum EntryType {
@@ -346,6 +360,7 @@ message ReviewDataUpdate {
   fixed64 zone_id = 1;
   float score = 2;
   int32 review_count = 3;
+  repeated ReviewIconData icons = 4;
 }
 
 message BusinessSummaryEntry {
@@ -394,6 +409,7 @@ message TemplateHouseholdSelectedStatus {
 }
 
 message TenantApplicationServicePersistence {
+  repeated TemplateHouseholdSelectedStatus template_selected_map = 1;
 }
 
 message TenantApplicationDesiredRent {
@@ -413,23 +429,32 @@ message TenantApplicationHouseholdOccupant {
 
 message TenantApplicationHousehold {
   string household_name = 1;
+  repeated TenantApplicationHouseholdOccupant household_occupants = 2;
   int32 desired_beds = 3;
+  repeated TenantApplicationDesiredRent desired_rent = 4;
   fixed64 household_id = 5;
   fixed64 zone_id = 6;
   uint32 household_name_key = 7;
 }
 
 message PotentialTenantApplicationHouseholds {
+  repeated TenantApplicationHousehold potential_households = 1;
+  repeated TenantApplicationNumHouseholds num_households = 2;
 }
 
 message CustomerBusinessData {
   fixed64 customer_id = 1;
   repeated fixed64 customer_buffs = 2;
+  repeated BusinessBuffBucketTotal buff_bucket_totals = 3;
   fixed64 last_buff_id = 4;
 }
 
 message EmployeeBusinessData {
+  repeated EmployeeData employee_data = 1;
   int32 daily_employee_wages = 2;
+  repeated BusinessUniformData employee_uniforms_male = 3;
+  repeated BusinessUniformData employee_uniforms_female = 4;
+  repeated BusinessDataPayroll employee_payroll = 5;
 }
 
 message EmployeeData {
@@ -439,11 +464,13 @@ message EmployeeData {
 
 message BusinessUniformData {
   fixed64 employee_type = 1;
+  MannequinSimData employee_uniform_data = 2;
 }
 
 message BusinessDataPayroll {
   fixed64 sim_id = 1;
   uint64 clock_in_time = 2;
+  repeated BusinessDataPayrollEntry payroll_data = 3;
 }
 
 message BusinessDataPayrollEntry {
@@ -517,6 +544,8 @@ message BusinessDailyCostsUpdate {
 
 message BusinessSummaryDialog {
   SetBusinessData business_data = 1;
+  repeated BusinessSummaryEntry lines_entries = 2;
+  repeated ManageEmployeeRowData employees = 3;
 }
 
 message BusinessCustomerUpdate {
@@ -532,9 +561,12 @@ message BusinessCustomerReviewEvent {
 
 message ManageEmployeesDialog {
   fixed64 hiring_sim_id = 1;
+  repeated ManageEmployeeJobData jobs = 2;
 }
 
 message ManageEmployeeJobData {
+  repeated ManageEmployeeRowData employees = 1;
+  repeated ManageEmployeeRowData available_sims = 2;
   uint32 open_slots = 3;
   uint32 locked_slots = 4;
   uint32 job_type = 5;
@@ -546,6 +578,7 @@ message ManageEmployeeRowData {
   fixed64 sim_id = 1;
   LocalizedString satisfaction_string = 2;
   uint32 pay = 3;
+  repeated ManageEmployeeSkillData skill_data = 4;
   uint32 current_career_level = 5;
   uint32 max_career_level = 6;
 }
@@ -587,11 +620,14 @@ message BusinessSaveData {
   EmployeeBusinessData employee_payroll = 4;
   uint64 open_time = 5;
   bool grand_opening = 6;
+  repeated BusinessFundsCategoryEntry funds_category_tracker_data = 7;
   int32 daily_revenue = 8;
   uint32 daily_items_sold = 9;
   uint32 lifetime_customers_served = 10;
   RestaurantSaveData restaurant_save_data = 11;
   float star_rating_value = 12;
+  repeated BusinessBuffBucketTotal buff_bucket_totals = 13;
+  repeated CustomerBusinessData customer_data = 14;
   uint32 session_customers_served = 15;
   uint64 last_off_lot_update = 17;
   uint32 buff_bucket_size = 18;
@@ -605,6 +641,9 @@ message BusinessFundsCategoryEntry {
 }
 
 message BusinessServiceData {
+  repeated BusinessTrackerData business_tracker_data = 1;
+  repeated BusinessTrackerData unowned_business_tracker_data = 2;
+  repeated FirstTimeMessages first_time_messages = 3;
   uint64 rental_unit_payout_timer = 4;
 }
 
@@ -621,8 +660,10 @@ message AdditionalEmployeeSlotData {
 message BusinessTrackerData {
   fixed64 household_id = 1;
   fixed64 business_type = 2;
+  repeated BusinessManagerData business_manager_data = 3;
   float additional_markup_multiplier = 4;
   float additional_customer_count = 5;
+  repeated AdditionalEmployeeSlotData additional_employee_slot_data = 6;
   uint32 rental_unit_payout_cache = 7;
 }
 
@@ -651,6 +692,7 @@ message CalendarFavoriteData {
 }
 
 message PersistableCalendarService {
+  repeated CalendarFavoriteData favorite_data = 1;
 }
 
 message BlueprintThumbnailChunkPackageHeader {
@@ -680,6 +722,7 @@ message ChunkPersistenceEntry {
 }
 
 message ChunkPersistenceFile {
+  repeated ChunkPersistenceEntry entries = 1;
 }
 
 enum ClubCriteriaCategory {
@@ -701,6 +744,7 @@ enum ClubInteractionRuleStatus {
 
 message ClubCriteria {
   ClubCriteriaCategory category = 1;
+  repeated ClubCriteriaInfo criteria_infos = 2;
   bool multi_select = 3;
   uint32 criteria_id = 4;
 }
@@ -721,6 +765,8 @@ message ClubConductRule {
 }
 
 message ClubBuildingInfo {
+  repeated ClubCriteria criterias = 1;
+  repeated LotInfoItem available_lots = 2;
 }
 
 message ClubInteractionRuleUpdate {
@@ -732,6 +778,7 @@ message ShowClubInfoUI {
 }
 
 message RemoteArgs {
+  repeated Arg args = 1;
 }
 
 message Arg {
@@ -742,6 +789,7 @@ message Arg {
 }
 
 message RemoteUpdate {
+  repeated Command commands = 1;
 }
 
 message Command {
@@ -756,6 +804,7 @@ message CommandResponse {
 }
 
 message KeyValResponse {
+  repeated KeyVal keyvals = 1;
 }
 
 message KeyVal {
@@ -843,6 +892,7 @@ message RelationshipUpdate {
   uint64 actor_sim_id = 3;
   uint64 target_sim_id = 4;
   repeated uint64 handshake_bit_ids = 6;
+  repeated RelationshipTrack tracks = 7;
   repeated uint64 known_trait_ids = 8;
   ManagerObjectId target_id = 9;
   uint64 target_instance_id = 10;
@@ -852,6 +902,7 @@ message RelationshipUpdate {
   uint64 last_update_time = 14;
   repeated uint64 known_stat_ids = 15;
   IconInfo target_icon_override = 16;
+  repeated RelationshipBitUpdate bit_updates = 17;
   uint64 known_major_id = 18;
   bool is_load = 19;
   fixed64 target_sim_fiance_id = 20;
@@ -862,6 +913,7 @@ message RelationshipUpdate {
   bool known_exploring_sexuality = 25;
   CompatibilityUpdate compatibility = 26;
   uint64 unconfronted_secret_id = 27;
+  ConfrontedSimSecret known_confronted_secrets = 28;
 }
 
 message CompatibilityUpdate {
@@ -886,6 +938,7 @@ message RelHandshakeUpdate {
   uint64 actor_sim_id = 1;
   uint64 target_sim_id = 2;
   repeated uint32 bit_ids = 3;
+  repeated HandshakeStatus bit_status = 4;
 }
 
 message CommodityStaticData {
@@ -894,10 +947,12 @@ message CommodityStaticData {
   IconInfo neutral_icon_info = 3;
   IconInfo neg_icon_info = 4;
   LocalizedString commodity_name = 5;
+  repeated IconInfo commodity_states = 6;
   uint32 threshold_index = 7;
 }
 
 message CommodityStaticDataList {
+  repeated CommodityStaticData commodity_data = 1;
 }
 
 message CommodityUpdate {
@@ -920,6 +975,7 @@ message CommodityProgressUpdate {
 
 message CommodityListUpdate {
   uint64 sim_id = 1;
+  repeated CommodityProgressUpdate commodities = 2;
 }
 
 message MoodUpdate {
@@ -1824,6 +1880,7 @@ enum VertAlign {
 }
 
 message DebugViz_LineSet {
+  repeated Line lines = 1;
 }
 
 message Line {
@@ -1848,6 +1905,7 @@ message DebugViz_Layer {
   string name = 1;
   bytes lines_data = 2;
   uint64 zoneId = 3;
+  repeated DebugViz_Text text_set = 4;
   bytes tris_data = 5;
 }
 
@@ -2079,11 +2137,13 @@ message UiTutorialArgs {
 
 message UiCommandArgs {
   string command_name = 1;
+  RemoteArgs command_remote_args = 2;
 }
 
 message UiSendMessageArgs {
   Action action = 3;
   string name = 1;
+  repeated Parameter parameters = 2;
 }
 
 message Parameter {
@@ -2110,12 +2170,14 @@ message UiDialogTextInputMessage {
 
 message UiDialogMessage {
   uint64 dialog_id = 1;
+  repeated UiDialogChoiceMessage choices = 2;
   LocalizedString text = 3;
   float timeout_duration = 4;
   uint64 owner_id = 5;
   uint64 target_id = 6;
   UiDialogPicker picker_data = 7;
   Type dialog_type = 8;
+  repeated UiDialogTextInputMessage text_input = 9;
   LocalizedString title = 10;
   uint32 dialog_options = 11;
   ResourceKey icon = 12;
@@ -2124,12 +2186,14 @@ message UiDialogMessage {
   uint64 timestamp = 15;
   LocalizedString lot_title = 16;
   IconInfo venue_icon = 17;
+  repeated IconInfo icon_infos = 18;
   uint32 dialog_style = 19;
   uint64 override_sim_icon_id = 20;
   UiDialogMultiPicker multi_picker_data = 21;
   uint32 dialog_bg_style = 22;
   bool is_special_dialog = 23;
   UiDialogInfoInColumns info_in_columns_data = 24;
+  repeated LocalizedString additional_texts = 25;
   bool anonymous_target_sim = 26;
   string background_audio_event = 27;
   ResourceKey background_image = 28;
@@ -2147,9 +2211,12 @@ message UiDialogCloseRequest {
 }
 
 message UiDialogInfoInColumns {
+  repeated LocalizedString column_headers = 1;
+  repeated UiDialogRowData rows = 2;
 }
 
 message UiDialogRowData {
+  repeated IconInfo column_info = 1;
 }
 
 message PickerColumn {
@@ -2206,22 +2273,27 @@ message RecipePickerRowData {
   repeated uint32 linked_option_ids = 4;
   ResourceKey event_icon = 5;
   bool visible_as_subrow = 6;
+  repeated RecipeIngredientData ingredients = 7;
   uint32 price_with_ingredients = 8;
   fixed64 mtx_id = 9;
   LocalizedString serving_display_name = 10;
   uint32 discounted_price = 11;
   bool is_discounted = 12;
   bool show_full_subrows = 13;
+  repeated RecipeBucksCostData bucks_costs = 14;
   int32 subrow_sort_id = 15;
   IconInfo locked_in_cas_icon_info = 16;
   RecipeGroupOverrideData group_override = 17;
   LocalizedString ingredients_list = 18;
   bool enable_speed_up_background = 19;
+  repeated RecipeIngredientData only_prepped_ingredients = 20;
+  repeated RecipeIngredientData both_fresh_prepped_ingredients = 21;
   LocalizedString ingredients_list_only_prepped = 22;
   LocalizedString ingredients_list_both_fresh_prepped = 23;
   bool cooking_time_reduced = 24;
   uint32 price_with_only_prepped_ingredients = 25;
   uint32 price_with_both_fresh_prepped_ingredients = 26;
+  repeated string food_restriction_ingredients = 27;
 }
 
 message SimPickerRowData {
@@ -2229,6 +2301,7 @@ message SimPickerRowData {
   uint64 sim_id = 2;
   bool select_default = 3;
   repeated uint32 failed_criteria = 4;
+  repeated SimPickerSkillRowData skills = 5;
   fixed64 mood_id = 6;
   string sim_location = 7;
 }
@@ -2290,12 +2363,15 @@ message OddJobPickerRowData {
 }
 
 message OddJobPickerData {
+  repeated OddJobPickerRowData row_data = 1;
   uint32 star_ranking = 2;
   ResourceKey picker_background = 3;
   bool hide_star_rating = 4;
 }
 
 message RecipePickerData {
+  repeated PickerColumn column_list = 1;
+  repeated RecipePickerRowData row_data = 2;
   uint64 skill_id = 3;
   repeated uint32 column_sort_list = 4;
   bool display_ingredient_check = 5;
@@ -2304,6 +2380,7 @@ message RecipePickerData {
 }
 
 message SimPickerData {
+  repeated SimPickerRowData row_data = 1;
   bool should_show_names = 2;
   ClubBuildingInfo club_building_info = 3;
   repeated uint32 rel_bit_collection_ids = 11;
@@ -2313,17 +2390,21 @@ message SimPickerData {
 }
 
 message ObjectPickerData {
+  repeated ObjectPickerRowData row_data = 1;
   uint32 num_columns = 2;
 }
 
 message OutfitPickerData {
+  repeated OutfitPickerRowData row_data = 1;
   ObjectPickerThumbnailType thumbnail_type = 2;
   repeated uint32 outfit_category_filters = 3;
 }
 
 message PurchasePickerData {
+  repeated PurchasePickerRowData row_data = 1;
   fixed64 object_id = 2;
   bool show_description = 3;
+  repeated PurchasePickerCategory categories = 5;
   fixed64 inventory_object_id = 6;
   bool show_cost = 7;
   uint32 max_selectable_in_row = 8;
@@ -2344,6 +2425,7 @@ message PurchasePickerCategory {
 }
 
 message LotPickerData {
+  repeated LotPickerRowData row_data = 1;
 }
 
 message PickerFilterData {
@@ -2354,6 +2436,7 @@ message PickerFilterData {
 
 message DropdownPickerData {
   UiDialogDropdownItem default_item = 1;
+  repeated UiDialogDropdownItem items = 2;
   LocalizedString invalid_tooltip = 3;
   uint32 selected_item_id = 4;
   uint32 options = 5;
@@ -2380,7 +2463,9 @@ message UiDialogPicker {
   bool is_sortable = 14;
   bool hide_row_description = 15;
   bool use_dropdown_filter = 16;
+  repeated PickerBaseRowData row_picker_data = 17;
   uint32 min_selectable = 18;
+  repeated PickerFilterDataList filter_data = 19;
   DropdownPickerData dropdown_picker_data = 20;
   DescriptionDisplay description_display = 21;
   OddJobPickerData odd_job_picker_data = 22;
@@ -2394,6 +2479,7 @@ message UiDialogPicker {
 }
 
 message PickerFilterDataList {
+  repeated PickerFilterData filter_data = 1;
   uint32 use_dropdown_filter = 2;
   bool add_all_category = 3;
   bool sort_filter_categories = 4;
@@ -2401,11 +2487,13 @@ message PickerFilterDataList {
 }
 
 message UiDialogMultiPicker {
+  repeated UiDialogMultiPickerItem multi_picker_items = 1;
   MultiPickerStyle multi_picker_style = 2;
   bool multi_picker_selection_equality = 3;
   LocalizedString multi_selection_inequality_tooltip = 4;
   uint32 multipicker_filter_type = 5;
   float multi_picker_items_height = 6;
+  repeated UIDialogMultiPickerCombinedLimitsData combined_limits_datas = 7;
 }
 
 message UIDialogMultiPickerCombinedLimitsData {
@@ -2463,6 +2551,7 @@ message UiCareerNotificationArgs {
   uint32 user_career_level = 4;
   uint64 sim_id = 5;
   uint32 paid_time_off_available = 6;
+  Schedule work_schedule = 7;
   bool paid_time_off_disabled = 8;
   uint32 schedule_shift_type = 9;
 }
@@ -2495,6 +2584,7 @@ message RetailSummaryDialog {
   LocalizedString subtitle = 2;
   IconInfo icon = 3;
   uint32 hours_open = 4;
+  repeated RetailSummaryLineItem line_items = 5;
   int32 total_amount = 6;
 }
 
@@ -2506,6 +2596,8 @@ message RetailSummaryLineItem {
 
 message RetailManageEmployeesDialog {
   fixed64 hiring_sim_id = 1;
+  repeated RetailEmployeeRowData employees = 2;
+  repeated RetailEmployeeRowData available_sims = 3;
   uint32 open_slots = 4;
   uint32 locked_slots = 5;
 }
@@ -2514,6 +2606,7 @@ message RetailEmployeeRowData {
   fixed64 sim_id = 1;
   LocalizedString satisfaction_string = 2;
   uint32 pay = 3;
+  repeated RetailEmployeeSkillData skill_data = 4;
   uint32 current_career_level = 5;
   uint32 max_career_level = 6;
 }
@@ -2525,6 +2618,7 @@ message RetailEmployeeSkillData {
 
 message GameplayPerkList {
   uint32 bucks_type = 1;
+  repeated GameplayPerk perk_list = 2;
 }
 
 message GameplayPerk {
@@ -2551,6 +2645,7 @@ message GameplayPerk {
 
 message BalanceTransferDialog {
   uint32 transfer_amount = 1;
+  repeated BalanceTransferLotData lot_data = 2;
 }
 
 message BalanceTransferLotData {
@@ -2560,6 +2655,7 @@ message BalanceTransferLotData {
 }
 
 message MultiPickerResponse {
+  repeated MultiPickerResponseItem picker_responses = 1;
   string text_input = 2;
 }
 
@@ -2575,6 +2671,7 @@ message ViewUpdateEntry {
 }
 
 message ViewUpdate {
+  repeated ViewUpdateEntry entries = 1;
 }
 
 enum ClubMessageType {
@@ -2676,9 +2773,11 @@ message Operation {
   bytes data = 2;
   MessageTypes data_context = 3;
   fixed32 primary_channel_mask_override = 4;
+  repeated OperationChannel additional_channels = 5;
 }
 
 message OperationList {
+  repeated Operation operations = 1;
 }
 
 message ObjectCreate {
@@ -2706,6 +2805,7 @@ message SocialGroupCreate {
 }
 
 message SocialGroupUpdate {
+  repeated SocialGroupMember members = 1;
 }
 
 message SocialGroupMember {
@@ -2734,9 +2834,11 @@ message EndClubGathering {
 
 message ClubInfo {
   ClubMessageType message_type = 1;
+  Club clubs = 2;
 }
 
 message ClubMembershipCriteriaValidation {
+  repeated FailureInfo failure_infos = 1;
 }
 
 message FailureInfo {
@@ -2765,6 +2867,7 @@ message PartyCreate {
 }
 
 message PartyUpdate {
+  repeated PartyMember party_members = 1;
 }
 
 message PartyTurnUpdate {
@@ -2829,6 +2932,7 @@ message SetSimAttachment {
 }
 
 message SetPeltLayers {
+  PeltLayerDataList pelt_layers = 1;
 }
 
 message SetCustomTexture {
@@ -2840,6 +2944,7 @@ message SetVoiceActor {
 }
 
 message SetVoiceSuffixOverrides {
+  repeated SuffixOverride suffix_overrides = 1;
 }
 
 message SuffixOverride {
@@ -2944,6 +3049,7 @@ message SetMessy {
 
 message SetTanLevel {
   uint32 tan_level = 1;
+  repeated PartData outfit_part_data_list = 2;
   bool force_update = 3;
 }
 
@@ -2990,6 +3096,7 @@ message SetParentType {
 }
 
 message SetAudioEffects {
+  repeated AudioEffect audio_effects = 1;
 }
 
 message AudioEffect {
@@ -3008,6 +3115,7 @@ message SetActorData {
 }
 
 message SetActorStateMachineParams {
+  repeated ActorStateMachineParam asm_params = 1;
 }
 
 message ActorStateMachineParam {
@@ -3019,9 +3127,11 @@ message ActorStateMachineParam {
 
 message SetFocusScore {
   FocusScoreEntry global_score = 1;
+  repeated SpecificFocusScoreEntry specific_scores = 2;
 }
 
 message FocusScoreEntry {
+  repeated FocusScoreEntryMultiplier multipliers = 2;
 }
 
 message FocusScoreEntryMultiplier {
@@ -3039,6 +3149,7 @@ message SetSimActive {
 }
 
 message SetSimOutfits {
+  OutfitList outfits = 1;
 }
 
 message PartData {
@@ -3049,6 +3160,7 @@ message PartData {
 }
 
 message PartDataListMessage {
+  repeated PartData parts = 1;
 }
 
 message SetGeneticData {
@@ -3066,6 +3178,7 @@ message SetThumbnail {
 
 message VideoSetPlaylist {
   uint32 version_id = 1;
+  repeated ResourceKey clip_keys = 2;
   bool final_loop = 3;
   bool video_overlay = 4;
   uint32 mute_speed = 5;
@@ -3120,6 +3233,7 @@ message SetMoney {
 }
 
 message InitializeCollection {
+  CollectionData household_collections = 1;
 }
 
 message SetPainting {
@@ -3154,6 +3268,7 @@ message TakePhoto {
   bool hide_photographer = 4;
   float success_chance = 5;
   string camera_position_bone_name = 6;
+  repeated SimPhotoInfo sim_photo_infos = 7;
   bool filters_disabled = 8;
   bool single_shot_mode = 9;
   PhotoSize painting_size = 10;
@@ -3164,6 +3279,8 @@ message TakePhoto {
   Vector3 camera_position_offset = 15;
   bool rotate_target = 16;
   repeated fixed64 objects_to_hide = 17;
+  repeated MoodCategory mood_categories = 18;
+  repeated string clip_index_values = 19;
   bool randomize_target_sim_order = 20;
   PhotoSize puzzle_size = 21;
 }
@@ -3172,6 +3289,7 @@ message MoodCategory {
   IconInfo mood_category_up_icon = 1;
   IconInfo mood_category_down_icon = 2;
   IconInfo mood_category_over_icon = 3;
+  repeated string mood_param_values = 4;
 }
 
 message CompositeParams {
@@ -3195,6 +3313,7 @@ message CompositeThumbnail {
   uint32 no_op_version = 4;
   bool is_modded = 5;
   bool force_rebuild_thumb = 6;
+  repeated CompositeParams additional_composite_operations = 7;
 }
 
 message ObjectThumbnail {
@@ -3205,6 +3324,7 @@ message CompositeImages {
   uint64 composite_target = 1;
   uint64 composite_target_effect = 2;
   fixed64 target_object = 3;
+  repeated CompositeParams additional_composite_operations = 4;
 }
 
 message HouseholdCreate {
@@ -3287,6 +3407,7 @@ message GigInfo {
   uint64 gig_end_time = 24;
   uint64 gig_uid = 25;
   bool hide_inactive_objectives = 26;
+  repeated ObjectiveChain chained_objectives = 27;
 }
 
 message ObjectiveChain {
@@ -3320,6 +3441,7 @@ message SetCareer {
   uint32 paid_time_off_available = 12;
   uint32 pay = 13;
   uint32 pay_raise_count = 14;
+  Schedule work_schedule = 15;
   repeated uint64 active_assignments = 16;
   bool paid_time_off_disabled = 17;
   GigInfo gig_info = 18;
@@ -3342,6 +3464,7 @@ message SetCareer {
 }
 
 message SetCareers {
+  repeated SetCareer careers = 1;
   string custom_name = 2;
   string custom_description = 3;
 }
@@ -3370,6 +3493,7 @@ message NotifyNotebookEntryDiscovered {
 }
 
 message SetAtWorkInfos {
+  repeated SetAtWorkInfo at_work_infos = 1;
 }
 
 message UpdateFindCareerInteractionAvailability {
@@ -3442,6 +3566,7 @@ message WhimGoal {
 }
 
 message SetCurrentWhims {
+  repeated WhimGoal whim_goals = 1;
 }
 
 message SetWhimComplete {
@@ -3505,6 +3630,7 @@ message SetRelatedObjects {
 }
 
 message PreloadSimOutfit {
+  repeated OutfitTypeAndIndex outfits = 1;
 }
 
 message OutfitTypeAndIndex {
@@ -3604,6 +3730,7 @@ message SetCurrentOccultTypes {
 }
 
 message SetMannequinData {
+  MannequinSimData sim_info_data = 1;
 }
 
 message SetMannequinPose {
@@ -3617,6 +3744,13 @@ message ShowFamilyTree {
 message FamilyTreeNode {
   fixed64 sim_id = 1;
   FamilyTreeNode spouse = 2;
+  repeated FamilyTreeNode parents = 3;
+  repeated FamilyTreeNode children = 4;
+  repeated FamilyTreeNode siblings = 5;
+  repeated FamilyTreeNode grandparents = 6;
+  repeated FamilyTreeNode grandchildren = 7;
+  repeated FamilyTreeNode divorced_spouses = 8;
+  repeated FamilyTreeNode dead_spouses = 9;
 }
 
 message CustomizableObjectData {
@@ -3630,6 +3764,7 @@ message CustomizableObjectData {
 }
 
 message CustomizableObjectDataList {
+  repeated CustomizableObjectData object_data = 1;
 }
 
 message MakeMemoryFromPhoto {
@@ -3684,6 +3819,7 @@ message SetLinkedSims {
 }
 
 message SetMulticolor {
+  repeated Vector3 color = 1;
 }
 
 message SetVFXMask {
@@ -3805,6 +3941,7 @@ message OrganizationUpdate {
 
 message OrganizationEventInfo {
   uint64 drama_node_id = 1;
+  Schedule schedule = 2;
   IconInfo event_info = 3;
   LocalizedString location = 4;
   uint64 zone_id = 5;
@@ -3812,6 +3949,7 @@ message OrganizationEventInfo {
 
 message OrganizationEventUpdate {
   uint64 org_id = 1;
+  repeated OrganizationEventInfo events = 2;
   LocalizedString no_events_are_scheduled_string = 3;
 }
 
@@ -3848,6 +3986,7 @@ message ClanMembershipUpdate {
 }
 
 message ClanUpdate {
+  ClanLeaderData clan_leaders = 1;
   uint32 clan_alliance_state = 2;
 }
 
@@ -3877,6 +4016,7 @@ message PivotalMomentsItem {
 message PivotalMomentsList {
   repeated uint64 completed_ids = 1;
   repeated uint64 rewarded_ids = 2;
+  repeated PivotalMomentsItem items = 3;
 }
 
 message SwitchActiveHouseholdControl {
@@ -3933,6 +4073,7 @@ message TrayBlueprintMetadata {
   UniversityHousingConfiguration university_housing_configuration = 17;
   uint32 tile_count = 18;
   uint32 unit_count = 19;
+  repeated UnitTraitData unitTraits = 20;
 }
 
 message TrayRoomBlueprintMetadata {
@@ -3968,12 +4109,16 @@ message WebAspirationInfo {
 }
 
 message TraySimMetadata {
+  PersistableTraitTracker trait_tracker = 1;
+  PersistableGenealogyTracker genealogy_tracker = 2;
   string first_name = 3;
   string last_name = 4;
   uint64 id = 5;
   uint32 gender = 6;
   uint64 aspirationId = 7;
+  FamilyRelation sim_relationships = 8;
   uint32 age = 9;
+  repeated WebTraitTracker web_trait_tracker = 10;
   WebAspirationInfo web_aspiration_info = 11;
   uint32 species = 12;
   bool is_custom_gender = 13;
@@ -3981,6 +4126,12 @@ message TraySimMetadata {
   string breed_name = 15;
   uint32 breed_name_key = 16;
   TrayRankedStatMetadata fame = 17;
+  PersistableTraitTracker like_trait_tracker = 18;
+  repeated WebTraitTracker web_like_trait_tracker = 19;
+  PersistableTraitTracker dislike_trait_tracker = 20;
+  repeated WebTraitTracker web_dislike_trait_tracker = 21;
+  RelationshipTrope sim_tropes = 22;
+  SimPronounList custom_pronoun = 23;
 }
 
 message TrayRankedStatMetadata {
@@ -3990,6 +4141,7 @@ message TrayRankedStatMetadata {
 
 message TrayHouseholdMetadata {
   uint32 family_size = 1;
+  repeated TraySimMetadata sim_data = 2;
   uint32 pending_babies = 3;
 }
 
@@ -4076,6 +4228,7 @@ message ExchangeEnvelope {
 
 message ThumbnailMessage {
   repeated uint32 thumbnail_info = 1;
+  repeated uint32 thumbnail_data = 2;
 }
 
 message ExchangeSocialEnvelope {
@@ -4087,12 +4240,14 @@ message ExchangeSocialEnvelope {
 }
 
 message ExchangeListResults {
+  repeated ExchangeEnvelope results = 1;
   string nextToken = 2;
 }
 
 message ExchangeWebserverUri {
   string baseuri = 1;
   uint32 foldermodulos = 2;
+  repeated BaseUri baseuris = 3;
 }
 
 message BaseUri {
@@ -4132,10 +4287,12 @@ message ExchangeFetchRecentRequest {
 }
 
 message ExchangeGetUpdatedStats {
+  repeated uint32 uuids = 1;
 }
 
 message ExchangeGetPrefixMatch {
   string prefix = 1;
+  repeated string matches = 2;
 }
 
 message ExchangeCombinedSearch {
@@ -4220,6 +4377,7 @@ message ExchangeWWCEResponse {
 
 message UGCShare {
   uint64 id = 1;
+  repeated CTDDescription ctd_details = 2;
   bool pf_check = 3;
 }
 
@@ -4244,6 +4402,7 @@ message SocialId {
 
 message SocialResponseFollowersMessage {
   uint64 nucleusid = 1;
+  repeated PlayerFollower followerslist = 2;
   uint32 index = 3;
   uint32 total_follower_count = 4;
 }
@@ -4258,6 +4417,7 @@ message PlayerFollower {
 
 message SocialFeedSubMessage {
   SocialId owner_id = 1;
+  repeated SubscriptionObject subscriptions = 2;
 }
 
 message SubscriptionFlags {
@@ -4293,6 +4453,7 @@ message SocialCandidatesBroadcast {
 }
 
 message SocialCGUpdateMessage {
+  repeated SocialCGVotePeriodMessage challenge_period = 1;
   SocialCandidateReportMessage report_msg = 2;
   SocialCandidatesBroadcast candidate_broadcast_msg = 3;
 }
@@ -4315,6 +4476,7 @@ message ServerCallbackInfoMessage {
 message ServerPlayerIdentificationListMessage {
   ePlayerIdentificationType key_type = 1;
   uint32 want_type = 2;
+  repeated ServerPlayerIdentificationMessage player_info_list = 3;
   ServerCallbackInfoMessage server_callback_info = 4;
   SocialResponseFollowersMessage social_responsefollowers_msg = 5;
   SocialFeedSubMessage social_feed_submessage = 6;
@@ -4329,9 +4491,11 @@ message ExchangeFetchPlayerStatistics {
 }
 
 message ExchangeFetchSubcriptionStats {
+  repeated ExchangeFetchPlayerStatistics fetchplayerstats = 1;
 }
 
 message ExchangeHashtagTrendsMessage {
+  repeated string results = 1;
 }
 
 message ExchangeModerateMessage {
@@ -4345,9 +4509,11 @@ message ExchangeStatTicker {
 }
 
 message ExchangeStatTickerMessage {
+  repeated ExchangeStatTicker data = 1;
 }
 
 message ExchangeGetSharedItemsByIdMessage {
+  repeated uint32 remote_ids = 1;
 }
 
 message ExchangeItemWithStatus {
@@ -4357,6 +4523,7 @@ message ExchangeItemWithStatus {
 }
 
 message ExchangeItemListWebMessage {
+  repeated ExchangeItemWithStatus items = 1;
   uint32 max_items = 2;
   bytes last_item = 3;
 }
@@ -4504,10 +4671,12 @@ message AccountData {
   string email = 3;
   uint64 created = 4;
   uint64 last_login = 5;
+  repeated EntitlementData entitlements = 8;
   UiOptionsData ui_options = 9;
   string client_version = 10;
   fixed64 save_slot_id = 12;
   GameplayAccountData gameplay_account_data = 14;
+  UiDialogMessage game_notification = 16;
   string client_version_at_creation = 17;
   uint64 number_of_saves = 18;
   uint64 number_of_saves_mods = 19;
@@ -4516,6 +4685,7 @@ message AccountData {
 }
 
 message NotificationSaveData {
+  UiDialogMessage game_notification = 1;
 }
 
 message SaveSlotData {
@@ -4524,6 +4694,7 @@ message SaveSlotData {
   fixed64 last_neighborhood = 3;
   repeated fixed64 zones = 4;
   fixed64 last_zone = 5;
+  IdList households = 6;
   bool is_migrated = 7;
   GameplaySaveSlotData gameplay_data = 8;
   string slot_name = 9;
@@ -4577,6 +4748,7 @@ message ObjectData {
   bytes attributes = 12;
   uint32 cost = 13;
   fixed64 baby_sim_id = 14;
+  UiObjectMetadata ui_metadata = 15;
   bool has_been_depreciated = 16;
   bool needs_depreciation = 17;
   bool created_from_lot_template = 18;
@@ -4584,22 +4756,27 @@ message ObjectData {
   fixed64 texture_id = 20;
   uint32 material_variant = 21;
   uint32 stack_sort_order = 22;
+  Vector3 light_color = 23;
   uint32 material_state = 24;
   uint32 geometry_state = 25;
   uint32 object_parent_type = 26;
   uint64 encoded_parent_location = 27;
   float light_dimmer_value = 28;
+  ResourceKey model_override_resource_key = 29;
   uint64 guid = 30;
   ObjectList unique_inventory = 31;
   bool needs_post_bb_fixup = 32;
   uint32 buildbuy_use_flags = 33;
   uint32 texture_effect = 34;
+  Vector3 multicolor = 35;
   int32 inventory_plex_id = 36;
   bool is_new_object = 37;
   repeated uint32 persisted_tags = 38;
+  CanvasStateType canvas_state_type = 39;
 }
 
 message ObjectList {
+  repeated ObjectData objects = 1;
 }
 
 message ObjectFallbackData {
@@ -4608,6 +4785,7 @@ message ObjectFallbackData {
 }
 
 message ObjectFallbackDataList {
+  repeated ObjectFallbackData fallbacks = 1;
 }
 
 message ZoneData {
@@ -4631,11 +4809,14 @@ message ZoneData {
   fixed64 master_zone_object_data_id = 19;
   repeated fixed64 lot_traits = 20;
   uint32 pending_house_desc_id = 21;
+  UniversityHousingConfiguration university_housing_configuration = 22;
   uint32 pending_plex_exterior_house_desc_id = 23;
 }
 
 message ZoneObjectData {
   fixed64 zone_id = 1;
+  repeated uint32 architecture_data = 2;
+  repeated ObjectList objects = 3;
   repeated fixed64 sub_venue_keys = 5;
   int32 active_data_index = 4;
   bool is_modified_from_lot_template = 6;
@@ -4650,12 +4831,14 @@ message OpenStreetsData {
   uint64 world_id = 1;
   uint64 nbh_id = 2;
   ObjectList objects = 4;
+  repeated SituationSeedData situation_seeds = 5;
   fixed64 active_household_id_on_save = 6;
   fixed64 active_zone_id_on_save = 7;
   uint64 sim_time_on_save = 8;
   OpenStreetDirectorData open_street_director = 9;
   ConditionalLayerServiceData conditional_layer_service = 10;
   AmbientServiceData ambient_service = 11;
+  repeated SituationConditionalLayerData situation_conditional_layers = 12;
 }
 
 message SimData {
@@ -4724,11 +4907,13 @@ message SimData {
   bool age_progress_randomized = 66;
   float skin_tone_val_shift = 67;
   fixed64 fiance = 68;
+  SimPronounList pronouns = 69;
   bool fix_traits_knowledge = 70;
   bool needs_age_progress_randomized = 71;
 }
 
 message SimList {
+  repeated SimData sims = 1;
 }
 
 message RewardPartData {
@@ -4737,6 +4922,7 @@ message RewardPartData {
 }
 
 message RewardPartList {
+  repeated RewardPartData reward_parts = 1;
 }
 
 message HouseholdDataDescOnly {
@@ -4756,6 +4942,7 @@ message ScenarioDataDescOnly {
 
 message ScenarioData {
   uint64 scenario_id = 1;
+  repeated SimRolePair sim_role_pairs = 2;
   uint64 instance_id = 3;
   uint32 scenario_entry_method = 4;
 }
@@ -4769,6 +4956,8 @@ message HouseholdData {
   ObjectList inventory = 6;
   fixed64 last_played_sim_id = 9;
   uint64 creation_time = 10;
+  IdList sims = 11;
+  IdList owned_lots = 12;
   uint32 instanced_object_count = 13;
   uint32 revision = 15;
   GameplayHouseholdData gameplay_data = 16;
@@ -4785,6 +4974,7 @@ message HouseholdData {
   bool cheats_enabled = 27;
   bool needs_welcome_wagon = 28;
   uint64 premade_household_id = 29;
+  IdList pending_urnstones = 30;
   bool is_unplayed = 14;
   bool is_player = 31;
   fixed64 premade_household_template_id = 32;
@@ -4815,16 +5005,19 @@ message LotOwnerInfo {
   uint64 lot_description_id = 1;
   fixed64 zone_instance_id = 2;
   string lot_name = 3;
+  repeated HouseholdAccountPair lot_owner = 4;
   uint32 lot_template_id = 5;
   fixed64 venue_key = 7;
   bool venue_eligible = 8;
   string lot_description = 9;
   int32 venue_tier = 10;
   EcoFootprintStateType eco_footprint_state = 11;
+  repeated SubVenueInfo sub_venue_infos = 12;
 }
 
 message TravelGroupData {
   fixed64 travel_group_id = 1;
+  repeated HouseholdSimIds household_sim_ids = 2;
   fixed64 zone_id = 3;
   bool played = 4;
   uint64 create_time = 5;
@@ -4836,6 +5029,7 @@ message TravelGroupData {
 }
 
 message TravelGroupList {
+  repeated TravelGroupData travel_groups = 1;
 }
 
 message ObjectCleanUpData {
@@ -4847,6 +5041,7 @@ message ObjectCleanUpData {
 message GameplayDestinationCleanUpData {
   fixed64 household_id = 1;
   fixed64 travel_group_id = 2;
+  repeated ObjectCleanUpData object_clean_up_data_list = 3;
 }
 
 message StreetInfoData {
@@ -4862,14 +5057,20 @@ message NeighborhoodData {
   fixed64 owner_id = 2;
   string name = 3;
   uint64 region_id = 4;
+  repeated LotOwnerInfo lots = 5;
   uint32 permissions = 6;
+  repeated HouseholdAccountPair households = 7;
+  repeated HouseholdAccountPair npc_households = 8;
   GameplayNeighborhoodData gameplay_data = 9;
   string description = 10;
   uint32 bedroom_count = 11;
   uint32 bathroom_count = 12;
+  repeated StreetInfoData street_data = 13;
 }
 
 message NeighborhoodDataMessage {
+  repeated NeighborhoodData neighborhoods = 1;
+  repeated TravelGroupData travel_groups = 2;
   repeated uint64 uninstalled_region_ids = 3;
 }
 
@@ -4878,6 +5079,7 @@ message AccountSettingsData {
 }
 
 message GameplayData {
+  repeated PremadeLotStatus premade_lot_status = 1;
   uint32 daily_sim_info_creation_count = 2;
 }
 
@@ -4899,7 +5101,9 @@ message SourceFunctionFileLine {
 
 message FeedbackContext {
   uint32 action_response_code = 1;
+  repeated ErrorFeedback error_list = 2;
   PersistenceActions source_action = 3;
+  repeated SourceFunctionFileLine source_lines = 4;
 }
 
 message SaveGameSlotMetaData {
@@ -4920,14 +5124,17 @@ message SaveGameSlotMetaData {
 }
 
 message SaveGameSlotList {
+  repeated SaveGameSlotMetaData slots = 1;
   bool allow_incompatible = 2;
 }
 
 message PlayerCustomColorList {
+  ResourceKey part_id = 1;
   repeated uint64 color_shifts = 2;
 }
 
 message PlayerCustomColors {
+  repeated PlayerCustomColorList color_mapping = 1;
 }
 
 message GigObjectInfo {
@@ -4942,8 +5149,10 @@ message GigTagCount {
 
 message GigObjectsTrackingData {
   uint64 zone_id = 1;
+  repeated GigTagCount tag_counts = 3;
   int32 tile_count = 4;
   repeated uint32 block_ids = 5;
+  repeated GigObjectInfo objects = 6;
   int32 max_level = 7;
   int32 min_level = 8;
 }
@@ -4959,20 +5168,41 @@ message SaveGameData {
   uint32 guid = 1;
   SaveSlotData save_slot = 2;
   AccountData account = 3;
+  repeated NeighborhoodData neighborhoods = 4;
+  repeated HouseholdData households = 5;
+  repeated SimData sims = 6;
+  repeated ZoneData zones = 7;
+  repeated OpenStreetsData streets = 8;
+  repeated TravelGroupData travel_groups = 9;
   repeated uint64 uninstalled_region_ids = 10;
   ObjectFallbackDataList object_fallbacks = 11;
+  repeated GameplayDestinationCleanUpData destination_clean_up_data = 12;
   GameplayData gameplay_data = 14;
+  repeated MannequinSimData mannequins = 15;
   SimRelationshipGraphData relgraph = 16;
   repeated fixed64 tutorial_tips = 17;
   repeated uint64 sims_removed_from_travel_groups = 18;
   PlayerCustomColors custom_colors = 19;
+  repeated GigObjectsTrackingData gig_start_objects_tracking_data = 20;
+  repeated GigObjectsTrackingData gig_end_objects_tracking_data = 21;
+  repeated GigRestrictionsData gig_restrictions_data = 22;
   StoryProgressionRuleSet protected_households_story_progression_rule_set = 23;
   StoryProgressionRuleSet unprotected_households_story_progression_rule_set = 24;
+}
+
+message SaveGameDataPrimary {
+  uint32 guid = 1;
+  SaveSlotData save_slot = 2;
+  AccountData account = 3;
+  repeated NeighborhoodData neighborhoods = 4;
+  repeated HouseholdData households = 5;
+  repeated SimData sims = 6;
 }
 
 message SaveGameDataDescOnly {
   uint32 guid = 1;
   SaveSlotDataDescOnly save_slot = 2;
+  repeated HouseholdDataDescOnly households = 5;
 }
 
 message GenusData {
@@ -4993,9 +5223,11 @@ message SimRelationshipNode {
   GenusData genus = 3;
   string first_name = 4;
   string last_name = 5;
+  repeated SimRelationshipEdge outgoing_edges = 6;
 }
 
 message SimRelationshipGraphData {
+  repeated SimRelationshipNode nodes = 1;
 }
 
 message StoryProgressionRule {
@@ -5004,6 +5236,7 @@ message StoryProgressionRule {
 }
 
 message StoryProgressionRuleSet {
+  repeated StoryProgressionRule rules = 1;
   bool enabled = 2;
 }
 
@@ -5142,6 +5375,9 @@ message GameplayZoneData {
   PersistableRankedStatisticTracker ranked_statistic_tracker = 14;
   int32 curfew_setting = 15;
   HiddenSimServiceData hidden_sim_service_data = 16;
+  repeated ZoneCurfewData curfew_settings = 17;
+  repeated Statistic architectural_statistics = 18;
+  repeated LotLevelData lot_level_data = 19;
 }
 
 message LotUnpaidBillData {
@@ -5155,11 +5391,13 @@ message HouseholdMilestoneDataTracker {
   repeated uint32 milestones_completed = 1;
   repeated uint32 objectives_completed = 2;
   EventDataObject data = 3;
+  repeated MilestoneCompletionCount milestone_completion_counts = 4;
 }
 
 message Holiday {
   fixed64 holiday_type = 1;
   string name = 2;
+  ResourceKey icon = 3;
   bool time_off_for_work = 4;
   bool time_off_for_school = 5;
   repeated fixed64 traditions = 6;
@@ -5167,6 +5405,8 @@ message Holiday {
 }
 
 message HolidayTracker {
+  repeated Holiday holidays = 1;
+  repeated SituationSeedData situations = 2;
   fixed64 situation_holiday_type = 3;
   uint64 situation_holiday_time = 4;
   fixed64 cancelled_holiday_type = 5;
@@ -5182,9 +5422,11 @@ message SimPreference {
 message ZonePreferenceData {
   uint64 zone_id = 1;
   uint64 preference_tag = 2;
+  repeated SimPreference sim_preferences = 3;
 }
 
 message ObjectPreferenceTracker {
+  repeated ZonePreferenceData zone_preference_datas = 1;
 }
 
 message Delivery {
@@ -5199,12 +5441,18 @@ message GameplayScenarioTrackerData {
 
 message GameplayScenarioData {
   uint64 scenario_guid = 1;
+  repeated ScenarioGoalData active_goals = 2;
   uint64 sim_time_lapsed = 3;
   uint64 active_phase_guid = 4;
   repeated uint64 completed_goals = 5;
   repeated uint64 triggered_phases = 6;
+  repeated IndexGoalMandatoryTriple last_completed_goal_sequence_pair = 7;
+  repeated SimFilterInfoPair sim_filter_sim_info_pair = 8;
   repeated uint64 skipped_phases = 9;
   repeated uint64 terminated_phases = 10;
+  repeated PhaseOutputInfo last_phase_outputs = 11;
+  repeated CompletedGoalInfo completed_goal_infos = 12;
+  repeated TerminatedPhaseInfo terminated_phase_infos = 13;
 }
 
 message ScenarioGoalData {
@@ -5242,17 +5490,25 @@ message TerminatedPhaseInfo {
 message GameplayHouseholdData {
   bool cheats_enabled = 1;
   uint32 owned_object_count = 2;
+  repeated ServiceNpcRecord service_npc_records = 3;
   repeated uint32 delinquent_utilities = 4;
   bool can_deliver_bill = 5;
   int64 current_payment_owed = 6;
   uint64 bill_timer = 7;
   uint64 shutoff_timer = 8;
   uint64 warning_timer = 9;
+  repeated AdditionalBillCost additional_bill_costs = 10;
+  repeated CollectionData collection_data = 11;
   bool put_bill_in_hidden_inventory = 12;
   uint64 billable_household_value = 13;
+  repeated SituationEarnedMedals highest_earned_situation_medals = 14;
   repeated uint64 build_buy_unlocks = 15;
   bool situation_scoring_enabled = 16;
+  ResourceKeyList build_buy_unlock_list = 17;
+  repeated RetailData retail_data = 18;
+  repeated BucksData bucks_data = 19;
   uint32 additional_employee_slots = 20;
+  repeated LotUnpaidBillData lot_unpaid_bill_data = 21;
   uint64 home_world_id = 22;
   fixed64 last_played_home_zone_id = 23;
   uint64 home_zone_move_in_ticks = 24;
@@ -5261,8 +5517,12 @@ message GameplayHouseholdData {
   MissingPetTrackerData missing_pet_tracker_data = 28;
   LaundryData laundry_data = 29;
   HolidayTracker holiday_tracker = 30;
+  repeated Delivery deliveries = 31;
   ObjectPreferenceTracker object_preference_tracker = 32;
+  repeated CurrentBillDetail current_bill_details = 33;
+  repeated BillUtilitySettings bill_utility_settings = 34;
   uint64 repo_man_due_time = 35;
+  repeated SituationNewEntry situation_new_entries = 36;
   GameplayScenarioTrackerData gameplay_scenario_tracker = 37;
   PersistableStoryProgressionTracker story_progression_tracker = 38;
   int64 non_housing_costs_owed = 39;
@@ -5285,6 +5545,7 @@ message CollectionData {
   uint64 collectible_def_id = 1;
   uint64 collection_id = 2;
   uint32 quality = 4;
+  IconInfo icon_info = 5;
 }
 
 message RetailData {
@@ -5295,8 +5556,10 @@ message RetailData {
   int32 funds = 5;
   MannequinSimData employee_uniform_data_male = 6;
   MannequinSimData employee_uniform_data_female = 7;
+  repeated RetailDataPayroll employee_payroll = 8;
   uint64 open_time = 9;
   bool grand_opening = 10;
+  repeated RetailFundsCategoryEntry funds_category_tracker_data = 11;
   int32 daily_revenue = 12;
   int32 daily_items_sold = 13;
   int32 daily_employee_wages = 14;
@@ -5305,6 +5568,7 @@ message RetailData {
 message RetailDataPayroll {
   fixed64 sim_id = 1;
   uint64 clock_in_time = 2;
+  repeated RetailDataPayrollEntry payroll_data = 3;
 }
 
 message RetailDataPayrollEntry {
@@ -5320,6 +5584,7 @@ message RetailFundsCategoryEntry {
 message BucksData {
   uint32 bucks_type = 1;
   uint32 amount = 2;
+  repeated UnlockedPerk unlocked_perks = 3;
 }
 
 message UnlockedPerk {
@@ -5333,16 +5598,23 @@ message UnlockedPerk {
 message PersistableClubService {
   bool has_seeded_clubs = 1;
   uint32 club_count = 2;
+  repeated Club clubs = 3;
 }
 
 message Club {
   uint64 club_id = 1;
   string name = 2;
+  ResourceKey icon = 3;
   string description = 4;
   bool invite_only = 5;
   fixed64 leader = 6;
   repeated fixed64 members = 7;
+  ResourceKey venue_type = 8;
+  ClubCriteria membership_criteria = 9;
+  ClubConductRule club_rules = 10;
   uint32 associated_color = 11;
+  ResourceKey club_seed = 12;
+  repeated BucksData bucks_data = 13;
   uint32 associated_style = 14;
   MannequinSimData club_uniform_adult_male = 15;
   MannequinSimData club_uniform_child_male = 16;
@@ -5356,16 +5628,20 @@ message Club {
 }
 
 message PersistableSocialMediaService {
+  repeated SocialMediaPostEntry post_entries = 1;
+  repeated SocialMediaMessageEntry direct_messages = 2;
   repeated uint64 sims_with_new_posts = 3;
   repeated uint64 sims_with_new_messages = 4;
 }
 
 message SocialMediaPostEntry {
   uint64 sim_id = 1;
+  repeated SocialMediaPost posts = 2;
 }
 
 message SocialMediaMessageEntry {
   uint64 sim_id = 1;
+  repeated SocialMediaDirectMessage messages = 2;
 }
 
 message SocialMediaDirectMessage {
@@ -5381,6 +5657,8 @@ message SocialMediaPost {
   uint32 narrative = 4;
   uint32 post_type = 5;
   uint64 post_time = 6;
+  LocalizedString post_text = 7;
+  repeated SocialMediaReaction reactions = 8;
 }
 
 message SocialMediaReaction {
@@ -5417,6 +5695,7 @@ message CurrentBillStatisticDelta {
 message CurrentBillDetail {
   uint64 utility = 1;
   int64 billable_amount = 2;
+  repeated CurrentBillStatisticDelta statistic_deltas = 5;
   float net_consumption = 6;
 }
 
@@ -5429,6 +5708,7 @@ message PersistableStoryProgressionParticipant {
   uint32 participant_type = 1;
   uint64 participant = 2;
   string participant_str = 3;
+  LocalizedString participant_loc_str = 4;
 }
 
 message PersistableDramaNode {
@@ -5443,6 +5723,7 @@ message PersistableDramaNode {
   fixed64 picked_sim_id = 9;
   uint64 club_id = 10;
   SituationSeedData stored_situation = 11;
+  repeated PersistableStoryProgressionParticipant story_progression_participants = 12;
 }
 
 message PersistableCallToActionService {
@@ -5469,6 +5750,7 @@ message PersistableFashionTrendService {
   uint64 next_trend_shift_ticks = 3;
   PersistableCommodityTracker commodity_tracker = 4;
   PersistableStatisticsTracker statistics_tracker = 5;
+  repeated FashionMarketplaceSoldOutfits sold_fashion_outfits = 6;
 }
 
 message CooldownDramaNode {
@@ -5482,8 +5764,12 @@ message DramaNodeCooldownGroup {
 }
 
 message PersistableDramaScheduleService {
+  repeated PersistableDramaNode drama_nodes = 1;
+  repeated CooldownDramaNode cooldown_nodes = 2;
+  repeated PersistableDramaNode running_nodes = 3;
   repeated fixed64 drama_nodes_on_permanent_cooldown = 4;
   repeated uint64 startup_drama_node_buckets_used = 5;
+  repeated DramaNodeCooldownGroup cooldown_groups = 6;
   repeated uint64 cooldown_groups_on_permanent_cooldown = 7;
 }
 
@@ -5494,13 +5780,19 @@ message PersistableRelationshipBitLock {
 
 message PersistableUnidirectionalRelationshipData {
   repeated uint64 bits = 1;
+  repeated Timeout timeouts = 2;
   SimKnowledge knowledge = 3;
   repeated uint64 bit_added_buffs = 4;
+  repeated PersistableRelationshipBitLock relationship_bit_locks = 5;
   uint64 sentiment_proximity_cooldown_end = 6;
+  repeated PersistableRelationshipTrack tracks = 7;
 }
 
 message PersistableBidirectionalRelationshipData {
   repeated uint64 bits = 1;
+  repeated Timeout timeouts = 2;
+  repeated PersistableRelationshipTrack tracks = 3;
+  repeated PersistableRelationshipBitLock relationship_bit_locks = 4;
   float compatibility_score = 5;
   uint32 compatibility_level = 6;
 }
@@ -5519,6 +5811,8 @@ message PersistableServiceRelationship {
 }
 
 message PersistableRelationshipService {
+  repeated PersistableServiceRelationship relationships = 1;
+  repeated PersistableServiceRelationship object_relationships = 2;
 }
 
 message PersistableGlobalPolicy {
@@ -5538,6 +5832,9 @@ message PersistableGlobalUtilityEffect {
 }
 
 message PersistableGlobalPolicyService {
+  repeated PersistableGlobalPolicy global_policies = 1;
+  repeated PersistableGlobalPolicyBillReduction bill_reductions = 2;
+  repeated PersistableGlobalUtilityEffect utility_effects = 3;
 }
 
 message AdoptableSimData {
@@ -5546,6 +5843,7 @@ message AdoptableSimData {
 }
 
 message PersistableAdoptionService {
+  repeated AdoptableSimData adoptable_sim_data = 2;
 }
 
 message HiddenSimData {
@@ -5554,6 +5852,7 @@ message HiddenSimData {
 }
 
 message PersistableHiddenSimService {
+  repeated HiddenSimData hidden_sim_data = 1;
 }
 
 message PersistableSeasonService {
@@ -5563,10 +5862,12 @@ message PersistableSeasonService {
 
 message DecorationState {
   uint64 decoration_type_id = 1;
+  repeated DecoratedLocation decorated_locations = 2;
 }
 
 message LotDecorationSetting {
   uint64 zone_id = 1;
+  repeated DecorationState decoration_states = 2;
   uint64 active_decoration_state = 3;
 }
 
@@ -5586,6 +5887,9 @@ message WorldDecorationSetting {
 }
 
 message PersistableLotDecorationService {
+  repeated LotDecorationSetting lot_decorations = 1;
+  repeated HolidayDecorationSetting holiday_preferences = 2;
+  repeated WorldDecorationSetting world_decorations_set = 3;
 }
 
 message HolidayTimeData {
@@ -5596,9 +5900,12 @@ message HolidayTimeData {
 
 message HolidayCalendar {
   uint32 season_length = 1;
+  repeated HolidayTimeData holidays = 2;
 }
 
 message PersistableHolidayService {
+  repeated Holiday holidays = 1;
+  repeated HolidayCalendar calendars = 2;
 }
 
 message StyleOutfitInfo {
@@ -5606,6 +5913,7 @@ message StyleOutfitInfo {
 }
 
 message PersistableStyleService {
+  repeated StyleOutfitInfo outfit_infos = 1;
 }
 
 message RabbitHoleData {
@@ -5622,6 +5930,7 @@ message RabbitHoleData {
 }
 
 message PersistableRabbitHoleService {
+  repeated RabbitHoleData rabbit_holes = 1;
 }
 
 message HorseCompetitionData {
@@ -5638,9 +5947,12 @@ message HorseCompetitionHighestPlacementData {
 
 message HorseCompetitionHorsePlacementData {
   fixed64 horse_id = 1;
+  repeated HorseCompetitionHighestPlacementData placements = 2;
 }
 
 message PersistableHorseCompetitionService {
+  repeated HorseCompetitionData competitions = 1;
+  repeated HorseCompetitionHorsePlacementData horse_placements = 2;
 }
 
 message NarrativeProgressionData {
@@ -5650,6 +5962,7 @@ message NarrativeProgressionData {
 message NarrativeData {
   uint64 narrative_id = 1;
   bool introduction_shown = 2;
+  repeated NarrativeProgressionData narrative_progression_entries = 3;
 }
 
 message NarrativeLayerData {
@@ -5660,11 +5973,17 @@ message NarrativeLayerData {
 message PersistableNarrativeService {
   repeated uint64 active_narratives = 1;
   repeated uint64 completed_narratives = 2;
+  repeated NarrativeData narratives = 3;
+  repeated NarrativeLayerData layer_data = 4;
   bool streets_need_cleanup = 5;
   repeated uint64 streets_to_cleanup = 6;
 }
 
 message PersistableOrganizationService {
+  repeated OrganizationData organizations = 1;
+  repeated OrganizationEventData org_festival_events = 2;
+  repeated OrganizationEventData org_venue_events = 3;
+  repeated ScheduleEventCallbackData schedule_cancelled_event_data = 4;
 }
 
 message ScheduleEventCallbackData {
@@ -5679,6 +5998,7 @@ message OrganizationEventData {
 
 message OrganizationData {
   uint64 organization_id = 1;
+  repeated OrganizationMemberData organization_members = 2;
 }
 
 message OrganizationMemberData {
@@ -5702,6 +6022,8 @@ message ClonedObjectsLocator {
 }
 
 message PersistableObjectLostAndFound {
+  repeated PersistableObjectLocator locators = 1;
+  repeated ClonedObjectsLocator clones_to_delete = 2;
 }
 
 message PersistableCullingServiceInteractingSim {
@@ -5710,6 +6032,7 @@ message PersistableCullingServiceInteractingSim {
 }
 
 message PersistableCullingService {
+  repeated PersistableCullingServiceInteractingSim interacting_sims = 1;
   repeated uint64 sims_to_cull = 2;
 }
 
@@ -5732,12 +6055,14 @@ message PersistableDefaultConditionalLayerData {
 }
 
 message PersistableCivicPolicyProviderData {
+  repeated PersistableCivicPolicyCustomData policy_data = 1;
   PersistableCommodityTracker commodity_tracker = 2;
   PersistableStatisticsTracker statistics_tracker = 3;
   PersistableRankedStatisticTracker ranked_statistic_tracker = 4;
   repeated uint64 balloted_policy_ids = 5;
   repeated uint64 up_for_repeal_policy_ids = 6;
   repeated uint64 loaded_conditional_layers = 7;
+  repeated PersistableDefaultConditionalLayerData turned_off_default_conditional_layers = 8;
   bool requires_initial_layer_setup = 9;
 }
 
@@ -5754,10 +6079,12 @@ message PersistableStreetData {
 }
 
 message PersistableStreetService {
+  repeated PersistableStreetData street_data = 1;
 }
 
 message PersistableCivicPolicyStreetPolicyData {
   bool enacted = 1;
+  repeated PersistableCivicPolicyCustomData effect_data = 2;
 }
 
 message PersistableCivicPolicyStreetConditionalLayerEffectData {
@@ -5770,6 +6097,7 @@ message PersistableRegionData {
 }
 
 message PersistableRegionService {
+  repeated PersistableRegionData region_data = 1;
 }
 
 message PersistableLifestyleService {
@@ -5780,6 +6108,7 @@ message PersistableLifestyleService {
 }
 
 message PersistableABTestService {
+  repeated ABTestData ab_test_data = 1;
 }
 
 message ABTestData {
@@ -5788,6 +6117,7 @@ message ABTestData {
 }
 
 message PersistableLiveEventService {
+  repeated LiveEventData live_event_data = 1;
 }
 
 message LiveEventData {
@@ -5805,6 +6135,7 @@ message PersistableAssignedAnimals {
 }
 
 message PersistableAnimalService {
+  repeated PersistableAssignedAnimals animal_data = 1;
 }
 
 message PresistablePurchasePickerGroupItem {
@@ -5814,10 +6145,12 @@ message PresistablePurchasePickerGroupItem {
 
 message PersistablePurchasePickerGroupData {
   uint64 timestamp = 1;
+  repeated PresistablePurchasePickerGroupItem items = 2;
   uint32 picker_group = 3;
 }
 
 message PersistablePurchasePickerService {
+  repeated PersistablePurchasePickerGroupData picker_group_data = 1;
 }
 
 message PersistableLunarCycleService {
@@ -5826,6 +6159,8 @@ message PersistableLunarCycleService {
 }
 
 message PersistableClanService {
+  repeated ClanLeaderData clan_leaders = 1;
+  repeated ClanMembersData clan_members = 2;
 }
 
 message ClanLeaderData {
@@ -5876,11 +6211,13 @@ message PivotalMoment {
   uint64 remaining_ticks = 2;
   SituationSeedData situation_seed = 3;
   uint32 activation_status = 4;
+  repeated ActivationTriggerStatus triggers = 5;
   uint64 pivotal_moment_id = 6;
   uint64 activation_trigger_id = 7;
 }
 
 message PersistableTutorialService {
+  repeated PivotalMoment pivotal_moments = 1;
 }
 
 message GameplaySaveSlotData {
@@ -5893,12 +6230,14 @@ message GameplaySaveSlotData {
   PersistableClubService club_service = 7;
   PersistableDramaScheduleService drama_schedule_service = 8;
   PersistableRelgraphService relgraph_service = 9;
+  BusinessServiceData business_service_data = 10;
   PersistableCallToActionService call_to_action_service = 11;
   repeated fixed64 once_only_drama_nodes = 12;
   PersistableRelationshipService relationship_service = 13;
   PersistableAdoptionService adoption_service = 14;
   PersistableHiddenSimService hidden_sim_service = 15;
   PersistableSeasonService season_service = 16;
+  PersistableWeatherService weather_service = 17;
   PersistableLotDecorationService lot_decoration_service = 18;
   PersistableHolidayService holiday_service = 19;
   PersistableStyleService style_service = 20;
@@ -5933,6 +6272,7 @@ message GameplaySaveSlotData {
   PersistableSimSecretsService sim_secrets_service = 49;
   PersistableMultiUnitEventService multi_unit_event_service = 50;
   PersistableMultiUnitOwnershipService multi_unit_ownership_service = 51;
+  TenantApplicationServicePersistence tenant_applications_data = 52;
 }
 
 message PersistableRelgraphService {
@@ -5941,6 +6281,8 @@ message PersistableRelgraphService {
 
 message GameplayCameraData {
   fixed64 target_id = 1;
+  Vector3 target_position = 2;
+  Vector3 camera_position = 3;
   bool follow_mode = 4;
   fixed64 zone_id = 5;
   fixed64 household_id = 6;
@@ -5953,6 +6295,7 @@ message GameplayNeighborhoodData {
 message GameplayAccountData {
   AccountEventDataTracker achievement_data = 1;
   GameplayOptions gameplay_options = 2;
+  UiDialogMessage game_notification = 8;
   bool cheats_enabled = 9;
   bool cheats_ever_enabled = 10;
 }
@@ -5961,6 +6304,7 @@ message AccountEventDataTracker {
   repeated uint32 milestones_completed = 1;
   repeated uint32 objectives_completed = 2;
   EventDataObject data = 3;
+  repeated MilestoneCompletionCount milestone_completion_counts = 4;
 }
 
 message GameplayOptions {
@@ -6005,11 +6349,15 @@ message GameplayOptions {
 }
 
 message RestaurantZoneDirectorData {
+  repeated TableGroup table_group = 1;
   int32 last_daily_special_absolute_day = 2;
+  repeated SavedDailySpecial saved_daily_specials = 3;
+  repeated GroupOrder group_orders = 4;
 }
 
 message TableGroup {
   uint64 table_id = 1;
+  repeated SimSeat sim_seats = 2;
 }
 
 message SimSeat {
@@ -6028,6 +6376,7 @@ message GroupOrder {
   uint32 order_status = 3;
   uint32 current_bucket = 4;
   repeated fixed64 table_ids = 5;
+  repeated FoodAndDrink sim_orders = 6;
   fixed64 assigned_waitstaff_id = 7;
   fixed64 assigned_chef_id = 8;
   fixed64 serving_object_id = 9;
@@ -6044,6 +6393,9 @@ message FoodAndDrink {
 message ZoneDirectorCleanupActionData {
   uint32 guid = 1;
   repeated fixed64 object_ids = 2;
+  ResourceKey resource_keys = 3;
+  repeated StateComponentState states = 4;
+  Location location = 5;
 }
 
 message ZoneDirectorSituationData {
@@ -6052,6 +6404,9 @@ message ZoneDirectorSituationData {
 }
 
 message ZoneDirectorData {
+  ResourceKey resource_key = 1;
+  repeated ZoneDirectorCleanupActionData cleanup_actions = 2;
+  repeated ZoneDirectorSituationData situations = 3;
   bytes custom_data = 4;
   RestaurantZoneDirectorData restaurant_data = 5;
 }
@@ -6062,6 +6417,7 @@ message VenueDataUpdate {
 }
 
 message VenueBusinessData {
+  BusinessRule business_rules = 1;
   int32 plex_rating_offset = 2;
 }
 
@@ -6074,10 +6430,12 @@ message VenueData {
 }
 
 message OpenStreetDirectorData {
+  ResourceKey resource_key = 1;
   repeated fixed64 created_objects = 2;
   repeated uint64 situation_ids = 3;
   bytes custom_data = 4;
   repeated fixed64 loaded_layers = 5;
+  repeated ZoneDirectorSituationData situations = 6;
   repeated fixed64 loaded_layer_guids = 7;
 }
 
@@ -6088,14 +6446,17 @@ message ConditionalLayerInfo {
 }
 
 message ConditionalLayerServiceData {
+  repeated ConditionalLayerInfo layer_infos = 1;
 }
 
 message AmbientSourceData {
   uint32 source_type = 1;
   repeated uint64 situation_ids = 2;
+  repeated ZoneDirectorSituationData situations = 3;
 }
 
 message AmbientServiceData {
+  repeated AmbientSourceData sources = 1;
 }
 
 message InteractionSaveData {
@@ -6116,7 +6477,9 @@ message TransitioningInteraction {
 }
 
 message SuperInteractionSaveState {
+  repeated InteractionSaveData interactions = 1;
   TransitioningInteraction transitioning_interaction = 2;
+  repeated InteractionSaveData queued_interactions = 3;
 }
 
 message WorldLocation {
@@ -6138,6 +6501,8 @@ message ZoneTimeStamp {
 }
 
 message WhimsetTrackerData {
+  repeated WhimData active_whims = 4;
+  repeated WhimData recently_completed_whims = 5;
   repeated uint64 active_whimset_guids = 6;
 }
 
@@ -6174,13 +6539,16 @@ message GameplaySimData {
   repeated uint32 spawner_tags = 9;
   uint32 spawn_point_option = 10;
   WhimsetTrackerData whim_tracker = 11;
+  repeated CollectionData collection_data = 12;
   repeated uint64 build_buy_unlocks = 13;
   AwayActionTrackerData away_action_tracker = 14;
   uint32 serialization_option = 15;
   uint64 time_alive = 16;
+  ResourceKeyList build_buy_unlock_list = 18;
   fixed64 old_household_id = 19;
   fixed64 premade_sim_template_id = 20;
   SimFavoriteData favorite_data = 21;
+  repeated BucksData bucks_data = 22;
   string creation_source_data = 17;
   uint64 creation_source = 23;
   uint64 gameplay_options = 24;
@@ -6196,6 +6564,7 @@ message PremadeLotStatus {
 }
 
 message EnsembleServiceData {
+  repeated EnsembleData ensemble_datas = 1;
 }
 
 message EnsembleData {
@@ -6210,6 +6579,7 @@ message MissingPetTrackerData {
   uint64 cooldown_alarm_finishing_time = 4;
   bool return_pet_on_zone_load = 5;
   bool running_away = 6;
+  repeated MotiveTestResults motive_test_results = 7;
   bool alert_posted = 8;
 }
 
@@ -6220,6 +6590,7 @@ message MotiveTestResults {
 
 message LaundryData {
   uint64 last_unload_time = 1;
+  repeated LaundryConditions laundry_conditions = 2;
 }
 
 message LaundryConditions {
@@ -6228,6 +6599,7 @@ message LaundryConditions {
 }
 
 message HiddenSimServiceData {
+  repeated HiddenSimData hidden_sim_data = 1;
 }
 
 message PreviousGoalData {
@@ -6237,7 +6609,9 @@ message PreviousGoalData {
 }
 
 message DevelopmentalMilestoneTrackerData {
+  repeated DevelopmentalMilestoneData active_milestones = 1;
   bool initial_loot_applied = 2;
+  repeated DevelopmentalMilestoneData archived_milestones = 3;
 }
 
 message DevelopmentalMilestoneData {
@@ -6245,10 +6619,14 @@ message DevelopmentalMilestoneData {
   DevelopmentalMilestoneStates state = 2;
   SituationGoalData goal_data = 3;
   bool new_in_ui = 4;
+  repeated PreviousGoalData previous_goals = 5;
   uint32 age_completed = 6;
 }
 
 message PersistableMultiUnitEventService {
+  repeated MultiUnitZoneEventData zone_event_data = 1;
+  repeated PropertyOwnerEventData property_owner_event_data = 2;
+  repeated MultiUnitEventLootData event_loot_data = 3;
 }
 
 message MultiUnitZoneEventData {
@@ -6296,10 +6674,12 @@ message PieMenuItem {
   uint64 category_key = 9;
   bool is_super = 10;
   float score = 11;
+  repeated ResourceKey icons = 12;
   fixed64 mood = 13;
   uint32 mood_intensity = 14;
   uint32 pie_menu_priority = 15;
   LocalizedString success_tooltip = 16;
+  repeated IconInfo icon_infos = 17;
   bool display_notification = 18;
   uint64 affordance_id = 19;
   bool phone_notification_control_override = 20;
@@ -6307,8 +6687,10 @@ message PieMenuItem {
 
 message PieMenuCreate {
   uint64 sim = 1;
+  repeated PieMenuItem items = 2;
   uint32 client_reference_id = 3;
   uint32 server_reference_id = 4;
+  repeated LocalizedStringToken category_tokens = 5;
   LocalizedString disabled_tooltip = 6;
   bool supress_social_front_page = 7;
   uint64 selected_affordance_id = 8;
@@ -6350,11 +6732,13 @@ message TravelSimsToZone {
 }
 
 message CASAvailableZonesInfo {
+  repeated WorldZonesInfo zones = 1;
 }
 
 message WorldZonesInfo {
   string name = 1;
   LocalizedString defaultName = 2;
+  repeated ZoneInfo zones = 3;
   uint32 worldId = 4;
 }
 
@@ -6440,6 +6824,7 @@ message LocalizedStringToken {
   uint32 memory_string_hash = 31;
   string raw_text = 32;
   LocalizedDateAndTimeData date_and_time = 33;
+  repeated SubTokenData sim_list = 34;
 }
 
 message SubTokenData {
@@ -6464,9 +6849,11 @@ message LocalizedDateAndTimeData {
 
 message LocalizedString {
   uint32 hash = 1;
+  repeated LocalizedStringToken tokens = 2;
 }
 
 message LocalizedStringValidate {
+  repeated LocalizedString localized_strings = 1;
 }
 
 message SituationEnded {
@@ -6520,10 +6907,12 @@ message LotObject {
   bytes attributes = 21;
   uint32 material_variant = 22;
   uint32 texture_effect = 23;
+  repeated Vector3 multicolor = 24;
 }
 
 message LotObjectList {
   uint32 lot_id = 1;
+  repeated LotObject lot_objects = 2;
 }
 
 message LotTemplate {
@@ -6555,6 +6944,7 @@ message Transform {
 }
 
 message LinearCurve {
+  repeated CurvePoint points = 1;
 }
 
 message CurvePoint {
@@ -6570,6 +6960,7 @@ message MemoriesList {
 }
 
 message MemoriesFilterFile {
+  repeated MemoriesList lists = 1;
 }
 
 message MoveInData {
@@ -6635,7 +7026,9 @@ message Product {
   uint64 id = 1;
   string offerid = 2;
   repeated uint64 children = 3;
+  repeated ResourceKey instances = 4;
   string name = 5;
+  repeated Country countries = 6;
   bool isBundle = 7;
   BundleContainment containmentType = 8;
   repeated uint64 childProductIds = 9;
@@ -6658,14 +7051,17 @@ message Product {
 }
 
 message OfferList {
+  repeated string offer_id = 1;
 }
 
 message Catalog {
   uint64 timestamp = 1;
+  repeated Product products = 2;
 }
 
 message Country {
   string countryCode = 1;
+  repeated Price prices = 2;
 }
 
 message Price {
@@ -6678,6 +7074,7 @@ message Price {
 }
 
 message ViewedEntitlements {
+  repeated EntitlementNotification viewed_entitlements = 1;
 }
 
 message EntitlementNotification {
@@ -6688,6 +7085,7 @@ message EntitlementNotification {
 }
 
 message ListOfEntitlements {
+  repeated Entitlement Entitlements = 1;
 }
 
 message Entitlement {
@@ -6712,6 +7110,7 @@ message ObjectIdsList {
 message OutfitData {
   uint64 outfit_id = 1;
   uint32 category = 2;
+  IdList parts = 5;
   uint64 created = 6;
   BodyTypesList body_types_list = 7;
   bool match_hair_style = 9;
@@ -6723,9 +7122,11 @@ message OutfitData {
 }
 
 message OutfitList {
+  repeated OutfitData outfits = 1;
 }
 
 message PartDataList {
+  repeated PartData parts = 1;
 }
 
 message GeneticData {
@@ -6743,10 +7144,13 @@ message PeltLayerData {
 }
 
 message PeltLayerDataList {
+  repeated PeltLayerData layers = 1;
 }
 
 message BlobSimFacialCustomizationData {
   repeated uint64 sculpts = 1;
+  repeated Modifier face_modifiers = 2;
+  repeated Modifier body_modifiers = 3;
 }
 
 message Modifier {
@@ -6755,6 +7159,10 @@ message Modifier {
 }
 
 message PersistenceControlMessageData {
+  SaveGameSlotMetaData slot_meta_data = 1;
+  SaveGameData save_data = 2;
+  ZoneObjectData zone_object_data = 3;
+  FeedbackContext errors = 4;
 }
 
 message PersistenceControlMessage {
@@ -6771,6 +7179,7 @@ message ResourceKey {
 }
 
 message ResourceKeyList {
+  repeated ResourceKey resource_keys = 1;
 }
 
 message RestControlMessage {
@@ -6803,13 +7212,16 @@ message RecipeItem {
 }
 
 message Course {
+  repeated RecipeItem items = 1;
   uint32 course_tag = 2;
 }
 
 message Menu {
+  repeated Course courses = 1;
 }
 
 message SimOrders {
+  repeated SimOrder sim_orders = 1;
   uint32 meal_cost = 2;
   bool is_recommendation = 3;
 }
@@ -6823,6 +7235,7 @@ message SimOrder {
 
 message ShowMenu {
   Menu menu = 1;
+  repeated SimOrder sim_orders = 2;
   repeated uint64 sim_ids = 3;
   bool chef_order = 4;
   uint32 running_bill_total = 5;
@@ -6830,12 +7243,14 @@ message ShowMenu {
 }
 
 message Order {
+  repeated SimOrder sim_orders = 1;
 }
 
 message RestaurantConfiguration {
   uint32 attire_id = 1;
   uint64 preset_id = 2;
   Menu custom_menu = 3;
+  repeated CareerOutfit outfits = 4;
 }
 
 message RoommateLeaveReasonInfo {
@@ -6848,6 +7263,7 @@ message RoommateInfo {
   fixed64 sim_id = 1;
   uint64 bed_id = 2;
   repeated uint64 decoration_ids = 3;
+  repeated RoommateLeaveReasonInfo leave_reason_infos = 4;
 }
 
 message RoommateBlacklistSimInfo {
@@ -6864,12 +7280,15 @@ message RoommateAdInfo {
 message RoommateData {
   fixed64 zone_id = 1;
   fixed64 household_id = 2;
+  repeated RoommateInfo roommate_infos = 4;
+  repeated RoommateBlacklistSimInfo blacklist_infos = 5;
   repeated uint64 pending_destroy_decoration_ids = 7;
   fixed64 locked_out_id = 8;
   int32 available_beds = 9;
 }
 
 message PersistableRoommateService {
+  repeated RoommateData roommate_datas = 1;
   RoommateAdInfo ad_info = 2;
 }
 
@@ -6959,10 +7378,12 @@ message RoutePoint {
 }
 
 message RoutePolygon {
+  repeated RoutePoint points = 1;
   SurfaceId routing_surface_id = 2;
 }
 
 message RoutePolygons {
+  repeated RoutePolygon polygons = 1;
 }
 
 message RouteEvent {
@@ -7045,14 +7466,23 @@ message WalkstyleOverride {
 message SlaveData {
   uint64 id = 1;
   Type type = 2;
+  repeated AttachmentInfo offset = 3;
+  repeated WalkstyleOverride walkstyle_overrides = 4;
+  repeated SlaveData slaves = 10;
   Transform final_location_override = 11;
 }
 
 message Route {
   uint64 id = 1;
+  repeated RouteNode nodes = 2;
   float time = 3;
   uint64 absolute_time_ms = 4;
+  repeated GoalPoint goals = 5;
+  repeated RouteEvent events = 6;
+  repeated RoutePolygon bounds_polygons = 7;
   uint32 track = 8;
+  repeated RoutePolygons obstacle_polygons = 9;
+  repeated SlaveData slaves = 10;
   uint32 mask = 11;
 }
 
@@ -7130,6 +7560,7 @@ message UserEntitlement {
 }
 
 message UserEntitlementMap {
+  repeated UserEntitlement entitlements = 1;
   uint64 last_modified_date = 2;
 }
 
@@ -7149,11 +7580,13 @@ message AchievementItem {
 message AchievementList {
   string name = 1;
   string gamename = 2;
+  repeated AchievementItem achievements = 3;
 }
 
 message AchievementMsg {
   int32 resultcode = 1;
   uint32 mode = 2;
+  repeated AchievementList lists = 3;
 }
 
 message UserShoppingCartItem {
@@ -7167,6 +7600,7 @@ message UserShoppingCartItem {
 }
 
 message UserShoppingCart {
+  repeated UserShoppingCartItem items = 1;
   string last_modified_date = 2;
 }
 
@@ -7175,6 +7609,7 @@ message Uint64Value {
 }
 
 message Uint64List {
+  repeated Uint64Value values = 1;
 }
 
 message BoolValue {
@@ -7187,9 +7622,11 @@ message HouseholdSimIds {
 }
 
 message Schedule {
+  repeated ScheduleEntry schedule_entries = 1;
 }
 
 message ScheduleEntry {
+  repeated ScheduleDay days = 1;
   uint32 start_hour = 2;
   uint32 start_minute = 3;
   float duration = 4;
@@ -7201,6 +7638,7 @@ message SimPronoun {
 }
 
 message SimPronounList {
+  repeated SimPronoun pronouns = 1;
 }
 
 enum DATA_TYPE {
@@ -7295,6 +7733,7 @@ enum RelationshipIndex {
 }
 
 message PersistenceMaster {
+  repeated PersistableData data = 1;
 }
 
 message PersistableData {
@@ -7364,16 +7803,22 @@ message LockData {
 }
 
 message PersistableStateComponent {
+  repeated StateComponentState states = 1;
+  repeated StateComponentState states_before_delinquency = 2;
 }
 
 message PersistableRelationshipTracker {
+  repeated PersistableRelationship relationships = 1;
 }
 
 message PersistableRelationship {
   uint64 target_id = 1;
   float value = 2;
   repeated uint64 bits = 3;
+  repeated Timeout timeouts = 4;
+  repeated PersistableRelationshipTrack tracks = 5;
   SimKnowledge knowledge = 6;
+  repeated BitAddedBuffList bit_added_buffs = 7;
   uint64 last_update_time = 8;
 }
 
@@ -7394,6 +7839,7 @@ message SimKnowledge {
   repeated uint32 known_woohoo_genders = 9;
   bool known_exploring_sexuality = 10;
   uint64 unconfronted_secret_id = 11;
+  repeated ConfrontedSimSecret confronted_secrets = 12;
 }
 
 message Timeout {
@@ -7414,6 +7860,7 @@ message BitAddedBuffList {
 }
 
 message PersistableCommodityTracker {
+  repeated Commodity commodities = 1;
   uint64 time_of_last_save = 2;
 }
 
@@ -7421,10 +7868,12 @@ message Commodity {
   uint64 name_hash = 1;
   float value = 2;
   bool apply_buff_on_start_up = 3;
+  LocalizedString buff_reason = 4;
   uint64 time_of_last_value_change = 5;
 }
 
 message PersistableStatisticsTracker {
+  repeated Statistic statistics = 1;
 }
 
 message Statistic {
@@ -7433,6 +7882,7 @@ message Statistic {
 }
 
 message PersistableSkillTracker {
+  repeated Skill skills = 1;
 }
 
 message Skill {
@@ -7448,6 +7898,7 @@ message StateComponentState {
 }
 
 message PersistableObjectPreferences {
+  repeated ObjectPreference preferences = 1;
 }
 
 message PersistableCraftingComponent {
@@ -7486,15 +7937,20 @@ message CraftingProcess {
   fixed64 current_ico = 4;
   uint64 crafter_sim_id = 6;
   PersistableStatisticsTracker statistic_tracker = 7;
+  repeated IngredientData used_ingredients = 8;
   string inscription = 9;
   uint32 crafted_value = 10;
   SimInfoNameData crafter_info = 11;
+  repeated BucksRefundData bucks_refund_on_cancel = 12;
+  repeated GenericIngredientData generic_recipe_ingredients = 13;
   uint64 situation_id = 14;
   repeated uint64 executed_phases = 15;
+  repeated GenericIngredientData defined_ingredients = 16;
   float single_serving_value = 17;
 }
 
 message PersistableObjectOwnership {
+  repeated ObjectPreference owned_object = 1;
 }
 
 message PersistableStereo {
@@ -7544,14 +8000,27 @@ message PersistableEventDataTracker {
   repeated uint64 objectives_completed = 2;
   EventDataObject data = 3;
   repeated uint64 unlocked_hidden_aspiration_tracks = 4;
+  repeated TimedAspiration timed_aspirations = 5;
+  repeated MilestoneCompletionCount milestone_completion_counts = 6;
+  repeated AdditionalObjectives additional_objectives = 7;
 }
 
 message EventDataObject {
+  repeated EventData_SituationData situation_data = 1;
+  repeated EventData_Objective_Data objective_data = 2;
+  repeated EventData_EnumToAmount simoleon_data = 3;
+  repeated EventData_EnumToAmount time_data = 4;
+  repeated EventData_NamedData interaction_data = 5;
+  repeated EventData_RelationshipData relationship_data = 6;
   repeated uint64 travel_data = 8;
+  repeated EventData_TagData tag_data = 9;
+  repeated EventData_CareerData career_data = 10;
+  repeated EventData_RelativeStartingData relative_start_data = 11;
   EventData_ClubBucksEarned club_bucks_data = 12;
   EventData_TimeInClubGathering time_in_gatherings = 13;
   EventData_EncouragedInteractions encouraged_interactions_started = 14;
   EventData_Moods mood_data = 15;
+  repeated EventData_EnumToAmount bucks_data = 16;
 }
 
 message EventData_RelativeStartingData {
@@ -7561,18 +8030,22 @@ message EventData_RelativeStartingData {
 
 message EventData_SituationData {
   string name = 1;
+  repeated EventData_SituationEnums results = 2;
 }
 
 message EventData_SituationEnums {
   uint32 result_enum = 1;
+  repeated EventData_EnumToAmount enum_quality = 2;
 }
 
 message EventData_TagData {
   uint32 tag_enum = 1;
+  repeated EventData_EnumToAmount enums = 2;
 }
 
 message EventData_RelationshipData {
   uint32 relationship_id = 1;
+  repeated EventData_EnumToAmount enums = 2;
 }
 
 message EventData_CareerData {
@@ -7588,6 +8061,7 @@ message EventData_Objective_Data {
 
 message EventData_NamedData {
   string name = 1;
+  repeated EventData_EnumToAmount enums = 2;
 }
 
 message EventData_EnumToAmount {
@@ -7612,6 +8086,7 @@ message MoodData {
 }
 
 message EventData_Moods {
+  repeated MoodData mood_data = 1;
 }
 
 message PersistableNameComponent {
@@ -7623,7 +8098,9 @@ message PersistableStoredSimInfoComponent {
   fixed64 sim_id = 1;
   SimInfoNameData sim_info_name_data = 2;
   repeated fixed64 sim_id_set = 3;
+  repeated SimInfoNameData sim_info_name_data_set = 4;
   repeated fixed64 sim_id_list = 5;
+  repeated SimInfoNameData sim_info_name_data_list = 6;
 }
 
 message PersistablePregnancyTracker {
@@ -7645,6 +8122,7 @@ message GameplayObjectPreference {
 
 message PersistableTraitTracker {
   repeated uint64 trait_ids = 1;
+  repeated GameplayObjectPreference gameplay_object_preference_map = 2;
 }
 
 message PersistableCanvasComponent {
@@ -7679,6 +8157,8 @@ message PersistableFlowingPuddleComponent {
 }
 
 message PersistableAdventureTracker {
+  repeated AdventureMomentPair adventures = 1;
+  repeated AdventureMomentCooldowns adventure_cooldowns = 2;
 }
 
 message AdventureMomentPair {
@@ -7693,6 +8173,7 @@ message AdventureMomentCooldowns {
 }
 
 message PersistableAppearanceTracker {
+  repeated AppearanceTrackerModifier appearance_modifiers = 1;
 }
 
 message AppearanceTrackerModifier {
@@ -7716,10 +8197,13 @@ message CareerHistoryEntry {
 }
 
 message PhotoPair {
+  ResourceKey before_photo = 1;
+  ResourceKey after_photo = 2;
 }
 
 message HiLowResPhotoPair {
   uint64 hi_res_photo_instance = 1;
+  ResourceKey low_res_photo = 2;
 }
 
 message GigHistoryEntry {
@@ -7729,8 +8213,13 @@ message GigHistoryEntry {
   uint64 career_id = 4;
   uint32 gig_result = 5;
   string client_hh_name = 6;
+  ResourceKey after_photos = 7;
+  ResourceKey before_photos = 8;
   uint32 gig_lot_type = 9;
+  LocalizedString project_title = 10;
+  repeated PhotoPair selected_pairs = 11;
   float gig_score = 12;
+  repeated HiLowResPhotoPair hi_low_res_pairs = 13;
 }
 
 message GigHistoryKey {
@@ -7746,6 +8235,7 @@ message CareerEventData {
 }
 
 message CareerEventManagerData {
+  repeated CareerEventData career_events = 1;
   SituationSeedData scorable_situation_seed = 2;
 }
 
@@ -7793,6 +8283,7 @@ message PersistableSimCareer {
   bool career_session_extended = 23;
   fixed64 zone_id = 24;
   bool has_attended_first_day = 25;
+  repeated CareerEventCooldown career_event_cooldowns = 26;
   bool should_restore_career_state = 27;
   repeated uint64 offered_assignments = 28;
   repeated uint64 active_assignments = 29;
@@ -7804,14 +8295,20 @@ message PersistableSimCareer {
   bool seen_scholarship_info = 35;
   uint64 familiar_rabbit_hole_id = 36;
   uint64 rabbit_hole_id = 37;
+  repeated CareerClaimedObjectData claimed_object_datas = 38;
+  repeated CareerGigData current_gigs = 39;
   bool follow_enabled = 40;
+  ResourceKey icon_override = 41;
   uint64 workplace_rival_id = 42;
 }
 
 message PersistableSimCareers {
+  repeated PersistableSimCareer careers = 1;
+  repeated CareerHistoryEntry career_history = 2;
   uint64 retirement_career_uid = 3;
   string custom_career_name = 4;
   string custom_career_description = 5;
+  repeated GigHistoryEntry gig_history = 6;
   GigHistoryKey last_gig_history = 7;
   uint64 retirement_career_track_uid = 8;
 }
@@ -7827,6 +8324,8 @@ message RelationshipTrope {
 }
 
 message PersistableGenealogyTracker {
+  repeated FamilyRelation family_relations = 1;
+  repeated RelationshipTrope relationship_tropes = 2;
 }
 
 message ObjectRelationship {
@@ -7837,6 +8336,7 @@ message ObjectRelationship {
 }
 
 message PersistableObjectRelationshipComponent {
+  repeated ObjectRelationship relationships = 1;
 }
 
 message PersistableObjectAgeComponent {
@@ -7850,6 +8350,7 @@ message FruitSpawner {
 }
 
 message PersistableGardeningComponent {
+  repeated FruitSpawner fruit_spawners = 1;
   repeated float crop_weights = 2;
 }
 
@@ -7861,6 +8362,7 @@ message UnlockData {
 }
 
 message PersistableUnlockTracker {
+  repeated UnlockData unlock_data_list = 1;
 }
 
 message PersistableSpawnerComponent {
@@ -7872,11 +8374,13 @@ message PersistableSpawnerComponent {
 }
 
 message PersistableRoyaltyTracker {
+  repeated Royalty royalties = 1;
 }
 
 message Royalty {
   uint32 royalty_type = 1;
   uint64 royalty_guid64 = 2;
+  LocalizedString entry_name = 3;
   float multiplier = 4;
   uint32 current_payment = 5;
 }
@@ -7884,6 +8388,7 @@ message Royalty {
 message PersistableOccultTracker {
   uint32 occult_types = 1;
   uint32 current_occult_types = 2;
+  repeated OccultSimData occult_sim_infos = 3;
   uint32 pending_occult_type = 4;
   bool occult_form_available = 5;
 }
@@ -7917,6 +8422,7 @@ message MannequinSimData {
   uint32 previous_outfit_index = 25;
   fixed64 zone_id = 31;
   uint32 world_id = 32;
+  AnimationStateRequest animation_pose = 51;
   float skin_tone_val_shift = 52;
 }
 
@@ -7925,6 +8431,7 @@ message PersistableMannequinComponent {
 }
 
 message PersistableNotebookTracker {
+  repeated NotebookEntryData notebook_entries = 1;
 }
 
 message NotebookSubEntryData {
@@ -7937,6 +8444,7 @@ message NotebookEntryData {
   repeated fixed64 object_entry_ids = 2;
   fixed64 tuning_reference_id = 3;
   bool new_entry = 4;
+  NotebookSubEntryData object_sub_entries = 5;
 }
 
 message PersistableRetailComponent {
@@ -7944,6 +8452,7 @@ message PersistableRetailComponent {
 }
 
 message PersistablePortalLockingComponent {
+  repeated LockData lock_data = 1;
 }
 
 message PersistableParentToSimHeadComponent {
@@ -7958,6 +8467,7 @@ message PersistableFutureStoryProgressionChapter {
 
 message PersistableStoryProgressionChapter {
   uint64 type = 1;
+  repeated PersistableFutureStoryProgressionChapter future_chapters = 2;
   bytes action_data = 3;
   uint64 completion_time = 4;
 }
@@ -7966,14 +8476,19 @@ message PersistableStoryProgressionSavedParticipant {
   uint32 participant_type = 1;
   uint64 participant_id = 2;
   string participant_str = 3;
+  LocalizedString participant_loc_str = 4;
 }
 
 message PersistableStoryProgressionArc {
   uint64 type = 1;
   PersistableStoryProgressionChapter current_chapter = 2;
+  repeated PersistableStoryProgressionChapter historical_chapters = 3;
+  repeated PersistableStoryProgressionSavedParticipant saved_participants = 4;
 }
 
 message PersistableStoryProgressionTracker {
+  repeated PersistableStoryProgressionArc current_arcs = 2;
+  repeated PersistableStoryProgressionArc historical_arcs = 3;
 }
 
 message PersistableStolenComponent {
@@ -7983,6 +8498,7 @@ message PersistableStolenComponent {
 }
 
 message PersistableRankedStatisticTracker {
+  repeated RankedStatistic ranked_statistics = 1;
 }
 
 message RankedStatistic {
@@ -8021,6 +8537,7 @@ message PersistableRelicTracker {
 message PersistableLifestyleBrandTracker {
   uint32 product = 1;
   uint32 target_market = 2;
+  ResourceKey logo = 3;
   string brand_name = 4;
   uint64 days_active = 5;
 }
@@ -8028,17 +8545,21 @@ message PersistableLifestyleBrandTracker {
 message PersistableStoredObjectInfoComponent {
   uint64 object_definition_id = 1;
   string custom_name = 2;
+  repeated StateComponentState states = 3;
   uint64 object_id = 4;
+  repeated StoredObjectData stored_object_data = 5;
 }
 
 message StoredObjectData {
   uint32 stored_object_type = 1;
   uint64 object_definition_id = 2;
   string custom_name = 3;
+  repeated StateComponentState states = 4;
   fixed64 object_id = 5;
 }
 
 message PersistableStoredAudioComponent {
+  SoundResource sound_resource = 1;
   uint32 channel_values_int = 2;
 }
 
@@ -8054,6 +8575,7 @@ message MissionCreatedSituations {
 message MissionObjectiveData {
   uint64 objective_id = 1;
   uint32 state = 2;
+  repeated MissionCreatedSituations created_situations = 3;
 }
 
 message CareerGigData {
@@ -8062,6 +8584,7 @@ message CareerGigData {
   repeated uint64 cast_list = 3;
   fixed64 customer_sim_id = 4;
   bool gig_attended = 5;
+  repeated MissionObjectiveData mission_objective_data = 6;
   repeated uint64 client_preferences = 7;
   repeated uint64 known_client_preferences = 8;
   uint64 client_lot_id = 9;
@@ -8072,6 +8595,7 @@ message CareerGigData {
 
 message PersistableSuntanTracker {
   uint32 tan_level = 1;
+  repeated PartData outfit_part_data_list = 2;
 }
 
 message PersistableObjectClaimComponent {
@@ -8112,6 +8636,8 @@ message PersistableDegreeTracker {
   int64 total_courses = 5;
   repeated uint64 previous_majors = 6;
   repeated uint64 previous_courses = 7;
+  repeated CollegeCourseInfo current_courses = 8;
+  repeated AcceptedDegrees accepted_degrees = 9;
   int64 enrollment_status = 10;
   uint64 end_of_term_time = 11;
   uint64 reenrollment_time = 12;
@@ -8123,7 +8649,9 @@ message PersistableDegreeTracker {
   repeated uint64 active_scholarships = 18;
   repeated uint64 accepted_scholarships = 19;
   repeated uint64 rejected_scholarships = 20;
+  repeated ScholarshipInfo pending_scholarships = 21;
   uint64 elective_timestamp = 22;
+  repeated ElectiveCoursesInfo elective_courses = 23;
   bool show_reenrollment_dialog_on_spin_up = 24;
 }
 
@@ -8134,9 +8662,12 @@ message OrganizationStatusInfo {
 
 message OrganizationActiveTasks {
   uint64 org_id = 1;
+  repeated TimedAspiration active_tasks = 2;
 }
 
 message PersistableOrganizationTracker {
+  repeated OrganizationStatusInfo org_status_map = 1;
+  repeated OrganizationActiveTasks tasks_map = 2;
   repeated uint64 unenrolled_org_ids = 3;
 }
 
@@ -8149,6 +8680,7 @@ message FamiliarData {
 
 message PersistableFamiliarTracker {
   uint64 active_familiar_uid = 1;
+  repeated FamiliarData familiars = 2;
 }
 
 message FavoritesData {
@@ -8164,6 +8696,8 @@ message ItemStackFavoritesData {
 }
 
 message PersistableFavoritesTracker {
+  repeated FavoritesData favorites = 1;
+  repeated ItemStackFavoritesData stack_favorites = 2;
 }
 
 message PersistableScholarshipLetterComponent {
@@ -8172,6 +8706,7 @@ message PersistableScholarshipLetterComponent {
 }
 
 message PersistableObjectLockingComponent {
+  repeated LockData lock_data = 1;
 }
 
 message PersistableFixupTracker {
@@ -8184,6 +8719,7 @@ message AllowUtilityUsageData {
 }
 
 message PersistableUtilitiesComponent {
+  repeated AllowUtilityUsageData allow_utility_usage_list = 1;
 }
 
 message PersistableStoredInfoComponent {
@@ -8200,6 +8736,7 @@ message PersistableObjectMarketplaceComponent {
 }
 
 message PersistableTraitStatisticTracker {
+  repeated TraitStatistic trait_statistics = 1;
   uint64 time_to_next_periodic_test = 2;
 }
 
@@ -8250,6 +8787,7 @@ message AnimalPreferenceData {
   repeated uint32 like_preferences = 1;
   repeated uint32 dislike_preferences = 2;
   uint32 favorite_preference = 3;
+  repeated PreferenceKnowledge preference_knowledge = 4;
 }
 
 message PreferenceKnowledge {
@@ -8257,6 +8795,7 @@ message PreferenceKnowledge {
   repeated uint32 unknown_tags = 2;
   repeated uint32 known_tags = 3;
   uint64 general_timestamp = 4;
+  repeated CategoryKnowledge category_timestamp = 5;
 }
 
 message CategoryKnowledge {
@@ -8278,9 +8817,11 @@ message PersistableObjectFashionMarketplaceComponent {
 }
 
 message PersistableBrandingIconComponent {
+  ResourceKey icon = 1;
 }
 
 message PersistableLunarEffectTracker {
+  repeated AppliedLunarEffect applied_effects = 1;
 }
 
 message AppliedLunarEffect {
@@ -8297,6 +8838,7 @@ message BodyPartCasPartObjectId {
 }
 
 message PersistableJewelryTracker {
+  repeated BodyPartCasPartObjectId cas_part_object_id_map = 1;
 }
 
 message PersistableJewelryComponent {
@@ -8498,6 +9040,7 @@ message SatisfactionReward {
 
 message SatisfactionRewards {
   uint64 sim_id = 1;
+  repeated SatisfactionReward rewards = 2;
 }
 
 message AccountFamilyData {
@@ -8506,12 +9049,14 @@ message AccountFamilyData {
   string familyname = 3;
   uint64 money = 4;
   bool dirty = 5;
+  SimData sim = 6;
   uint32 responsecode = 7;
   uint64 familyzoneid = 8;
   bool is_npc = 9;
   bool is_new = 10;
   string description = 11;
   string hashtag_description = 19;
+  ObjectList inventory = 12;
   uint64 last_modified_time = 13;
   uint64 original_creator_id = 14;
   string original_creator_string = 15;
@@ -8519,6 +9064,7 @@ message AccountFamilyData {
   uint64 modifier_id = 17;
   string modifier_string = 18;
   bool hidden = 20;
+  RewardPartList reward_inventory = 21;
   uint64 starter_ref_id = 22;
   bool is_player_protected = 24;
   bool pet_removed = 25;
@@ -8529,6 +9075,8 @@ message AccountFamilyData {
   ExchangeItemPlatform modifier_platform = 30;
   string modifier_platform_name = 31;
   uint64 modifier_platform_id = 32;
+  GameplayHouseholdData gameplay_data = 33;
+  StoryProgressionRuleSet story_progression_rule_set = 34;
 }
 
 message FamilyData {
@@ -8546,6 +9094,7 @@ message AccountFamilyDataPatch {
 }
 
 message SimLoadInfoVector {
+  SimData SimLoadInfoResponse = 1;
 }
 
 message UpdateClientActiveSim {
@@ -8558,6 +9107,7 @@ message PlumbbobOverrideModelKey {
 }
 
 message PlumbbobSetPlumbbobOverrideModelKey {
+  repeated PlumbbobOverrideModelKey overrides = 1;
 }
 
 message ServerResponseFailed {
@@ -8567,6 +9117,7 @@ message ServerResponseFailed {
 
 message SimPB {
   uint64 id = 1;
+  GameInstanceInfoPB instance_info = 2;
   string firstname = 3;
   string lastname = 4;
   bool at_work = 5;
@@ -8577,6 +9128,7 @@ message SimPB {
 }
 
 message UpdateSelectableSims {
+  repeated SimPB sims = 1;
 }
 
 message Interaction {
@@ -8598,6 +9150,7 @@ message Interaction {
   IQ_PipelineStage pipeline_progress = 29;
   IQ_UI_State queue_ui_state = 30;
   ManagerObjectId target_manager_object_id = 32;
+  repeated ManagerObjectId participant_manager_object_ids = 33;
   fixed64 stc_bit_id = 34;
   IconInfo super_icon_info = 35;
   repeated fixed64 mood_list = 36;
@@ -8605,10 +9158,12 @@ message Interaction {
 
 message InteractionsAdd {
   uint64 sim_id = 1;
+  repeated Interaction interactions = 2;
 }
 
 message InteractionsUpdate {
   uint64 sim_id = 1;
+  repeated Interaction interactions = 2;
 }
 
 message InteractionMixerOptionAdd {
@@ -8630,10 +9185,12 @@ message InteractionMixerOptionAdd {
 message InteractionMixerOptionsAdd {
   uint64 interaction_id = 1;
   uint32 server_reference_id = 2;
+  repeated InteractionMixerOptionAdd mixer_option = 3;
 }
 
 message InteractionMixerOptionsUpdate {
   uint64 interaction_id = 1;
+  repeated InteractionMixerOptionUpdate mixer_option = 2;
 }
 
 message InteractionMixerOptionUpdate {
@@ -8649,6 +9206,8 @@ message InteractionMixerOptionCommands {
   uint64 sim_id = 1;
   uint64 interaction_id = 2;
   uint32 server_reference_id = 3;
+  repeated InteractionMixerOptionAdd mixer_adds = 4;
+  repeated InteractionMixerOptionUpdate mixer_updates = 6;
 }
 
 message InteractionMixerOptionsClear {
@@ -8671,6 +9230,7 @@ message InteractionQuickTimeMixerUpdate {
 
 message InteractionQueueViewAdd {
   InteractionsAdd interactions = 1;
+  repeated InteractionMixerOptionsAdd mixer_options = 2;
 }
 
 message InteractionsRemove {
@@ -8786,6 +9346,7 @@ message BuffUpdate {
   float rate_multiplier = 9;
   uint64 mood_type_override = 10;
   uint64 transition_into_buff_id = 11;
+  repeated MotiveOverlay motive_overlays = 12;
   uint32 update_type = 13;
   BuffDisplayType display_type = 14;
   LocalizedString pack_specific_description = 15;
@@ -8829,6 +9390,7 @@ message CareerInfo {
   uint32 career_level = 3;
   LocalizedString company = 4;
   bool conflicted_schedule = 5;
+  Schedule work_schedule = 6;
   bool is_active = 7;
   bool is_selectable = 8;
   uint32 hourly_pay = 9;
@@ -8838,6 +9400,7 @@ message CareerInfo {
 
 message CareerSelectionUI {
   uint64 sim_id = 1;
+  repeated CareerInfo career_choices = 2;
   bool is_branch_select = 3;
   SelectionReason reason = 4;
   uint32 current_shift = 5;
@@ -8873,6 +9436,7 @@ message RewardPayout {
   repeated uint32 money = 2;
   repeated fixed64 cas_part_keys = 3;
   repeated uint64 trait_ids = 4;
+  repeated LocalizedString object_names = 5;
 }
 
 message SocialContextUpdate {
@@ -8899,10 +9463,12 @@ message DevelopmentalMilestoneUpdate {
 
 message AllDevelopmentalMilestonesUpdate {
   uint64 sim_id = 1;
+  repeated DevelopmentalMilestoneUpdate milestones = 2;
 }
 
 message LifetimeMilestonesData {
   uint32 category_id = 1;
+  repeated DevelopmentalMilestoneUpdate milestones = 2;
 }
 
 
@@ -8922,6 +9488,7 @@ message SituationGoalData {
   uint64 completed_time = 8;
   fixed64 target_id = 9;
   fixed64 secondary_target_id = 10;
+  repeated SituationGoalData sub_goals = 11;
 }
 
 message CompletedSituationGoalData {
@@ -8939,7 +9506,10 @@ message SituationGoalChainData {
 message SituationGoalTrackerData {
   bool has_offered_goals = 1;
   fixed64 inherited_target_id = 2;
+  repeated SituationGoalChainData chains = 3;
+  repeated SituationGoalData minor_goals = 4;
   SituationGoalData main_goal = 5;
+  repeated CompletedSituationGoalData completed_goals = 6;
   GoalTrackerType goal_tracker_type = 7;
 }
 
@@ -8975,6 +9545,7 @@ message SituationJobAndRoleState {
 
 message SituationSpecialObject {
   uint64 definition_id = 1;
+  LocalizedString name = 2;
 }
 
 message SituationSeedData {
@@ -8983,9 +9554,11 @@ message SituationSeedData {
   uint32 seed_purpose = 3;
   bool invite_only = 4;
   fixed64 host_sim_id = 5;
+  repeated SituationAssignmentData assignments = 6;
   bool user_facing = 7;
   float duration = 8;
   fixed64 zone_id = 9;
+  repeated SituationJobAndRoleState jobs_and_role_states = 10;
   uint64 create_time = 11;
   float score = 12;
   SituationSimpleSeedlingData simple_data = 13;
@@ -8997,6 +9570,7 @@ message SituationSeedData {
   bool scoring_enabled = 19;
   bool main_goal_visibility = 20;
   fixed64 linked_sim_id = 21;
+  IconInfo special_object_icon = 22;
   repeated fixed64 situation_activity_ids = 23;
   SituationSpecialObject special_object = 24;
   uint64 guest_attire_color = 25;
@@ -9011,11 +9585,14 @@ message SituationBlacklistTagData {
 
 message SituationBlacklistData {
   fixed64 sim_id = 1;
+  repeated SituationBlacklistTagData tag_data = 2;
 }
 
 message AllSituationData {
+  repeated SituationSeedData seeds = 1;
   fixed64 leave_situation_id = 2;
   fixed64 leave_now_situation_id = 3;
+  repeated SituationBlacklistData blacklist_data = 4;
 }
 
 message SimPickerItem {
@@ -9035,12 +9612,14 @@ message SituationEditData {
   repeated uint64 selected_activity_ids = 3;
   uint64 guest_attire_style = 4;
   uint64 guest_attire_color = 5;
+  repeated SituationEditJobData job_data = 6;
   IconInfo special_object_icon_info = 7;
 }
 
 message SituationPrepare {
   uint32 situation_session_id = 1;
   bool is_targeted = 2;
+  repeated SimPickerItem sims = 3;
   fixed64 target_id = 4;
   fixed64 sim_id = 5;
   repeated uint64 situation_resource_id = 6;
@@ -9052,16 +9631,21 @@ message SituationPrepare {
 message SituationIDBatch {
   uint32 situation_session_id = 1;
   repeated uint64 situation_resource_id = 2;
+  repeated LocalizedString situation_name = 3;
   repeated uint32 category_id = 4;
   repeated fixed64 mtx_id = 5;
   repeated int32 highest_medal_earned = 6;
   bool scoring_enabled = 7;
+  repeated LocalizedString tooltip = 8;
   repeated bool allow_user_facing_goals = 9;
+  repeated ResourceKey medal_icon_override = 10;
+  repeated LocalizedString scoring_lock_reason = 11;
   repeated bool new_entry = 12;
 }
 
 message SituationDataBatch {
   uint32 situation_session_id = 1;
+  repeated SituationData situations = 2;
 }
 
 message SituationGuestAttireColor {
@@ -9076,6 +9660,8 @@ message SituationGuestAttireStyle {
 }
 
 message SituationStyleData {
+  repeated SituationGuestAttireColor guest_attire_colors = 1;
+  repeated SituationGuestAttireStyle guest_attire_styles = 2;
   LocalizedString special_object_help_tooltip = 3;
   ResourceKey no_special_object_icon = 4;
   LocalizedString no_special_object_label = 5;
@@ -9088,6 +9674,8 @@ message SituationData {
   IconInfo icon_info = 1;
   uint32 cost = 2;
   uint32 max_participants = 3;
+  repeated SituationLevelReward rewards = 4;
+  repeated SituationJobData jobs = 5;
   repeated uint64 available_activity_ids = 6;
   repeated uint64 required_activity_ids = 7;
   SituationStyleData style_data = 8;
@@ -9106,6 +9694,7 @@ message SituationJobData {
 
 message SituationLevelReward {
   uint32 level = 1;
+  repeated LocalizedString display_name = 2;
 }
 
 message SituationAssignJob {
@@ -9126,10 +9715,12 @@ message SituationJobSims {
   uint64 job_resource_id = 2;
   repeated fixed64 sim_ids = 3;
   bool lock_selection = 4;
+  repeated SituationJobSim sims = 5;
   LocalizedString requirements = 6;
 }
 
 message SituationLocations {
+  repeated LotInfoItem situation_locations = 1;
 }
 
 message SituationSimScore {
@@ -9160,17 +9751,21 @@ message SituationJobAssignment {
 
 message SituationStart {
   uint32 score = 1;
+  repeated SituationSimScore participants = 2;
   IconInfo icon_info = 3;
+  repeated SituationLevelData level_data = 4;
   OperationList operation_list = 5;
   uint64 end_time = 6;
   uint64 situation_id = 7;
   SituationLevelUpdate current_level = 8;
   repeated fixed64 sim_ids = 9;
+  repeated SituationJobAssignment sim_jobs = 10;
   uint64 start_time = 11;
   ResourceKey start_audio_sting = 12;
   bool scoring_enabled = 13;
   bool is_active_career = 14;
   bool has_stayed_late = 15;
+  repeated SituationMeterData meter_data = 16;
   uint32 display_type = 17;
   fixed64 linked_sim_id = 18;
   bool force_goals_enabled = 19;
@@ -9225,6 +9820,7 @@ message SituationGoal {
 
 message SituationGoalsUpdate {
   uint64 situation_id = 2;
+  repeated SituationGoal goals = 3;
   uint32 completed_goal_id = 4;
   SituationGoal major_goal = 5;
   uint32 goal_status = 6;
@@ -9259,6 +9855,7 @@ message SituationMeterData {
   fixed32 maximum_value = 3;
   LocalizedString meter_text = 4;
   LocalizedString meter_tooltip = 5;
+  repeated SituationMeterThreshold thresholds = 6;
 }
 
 message SituationMeterThreshold {
@@ -9285,10 +9882,12 @@ message SituationOutcomeData {
 message ScenarioGoalGroup {
   IconInfo header_icon = 1;
   LocalizedString header_name = 2;
+  repeated SituationGoal goals = 3;
 }
 
 message ScenarioGoalsUpdate {
   uint64 scenario_id = 1;
+  repeated ScenarioGoalGroup goal_groups = 2;
   uint32 completed_goal_id = 3;
   uint64 instance_id = 4;
 }
@@ -9343,6 +9942,7 @@ message SocialFriendMsg {
 }
 
 message SocialPersonaResponseMsg {
+  repeated string personas = 1;
 }
 
 message SocialGenericResponse {
@@ -9353,6 +9953,7 @@ message SocialGenericResponse {
 }
 
 message SocialPlayerInfoList {
+  repeated PlayerInfo players = 1;
 }
 
 message PlayerInfo {
@@ -9368,6 +9969,7 @@ message PlayerInfo {
 
 message SocialSearchMsg {
   string prefix = 1;
+  repeated LocalizedStringToken search_results = 2;
 }
 
 message OriginErrorMessage {
@@ -9412,6 +10014,7 @@ message SocialExchangeMessage {
 }
 
 message SocialFollowersMessage {
+  repeated uint32 sfim_blob = 1;
 }
 
 message SocialFeedItemMessage {
@@ -9446,6 +10049,7 @@ message SocialGetWallCommentsMessage {
   bytes gallery_id = 2;
   bytes starting_uuid = 3;
   uint32 num_results = 4;
+  repeated SocialWallCommentMessage messages = 5;
   bool hidden = 6;
   bool exclude_reported = 7;
   string nextToken = 8;
@@ -9465,6 +10069,8 @@ message SocialDeleteWallCommentMessage {
 
 message SocialRequestFeedWallMessage {
   bytes ending_uuid = 1;
+  repeated SocialFeedItemMessage messages = 2;
+  repeated SocialFeedItemUnserializedMessage unserialized_messages = 3;
   uint32 num_items = 4;
 }
 
@@ -9481,6 +10087,7 @@ message SocialRequestIgnoreListMessage {
 
 message SocialGetPlayerInfoListMessage {
   uint64 player_nucleus_id = 1;
+  repeated PlayerInfo player_info_list = 2;
 }
 
 message SocialCommentPetitionMessage {
@@ -9572,15 +10179,19 @@ message SocialCandidatesMessage {
   uint32 category_restriction = 3;
   string challenge = 4;
   bytes digest = 5;
+  repeated SocialCandidateStatisticSubmessage candidates = 6;
   uint64 expire_epoch_secs = 7;
 }
 
 message SocialEvaluationResultsMessage {
+  repeated string winner_ids = 1;
+  repeated string loser_ids = 2;
   bytes digest = 3;
 }
 
 message SocialCGDigestMessage {
   string challenge = 1;
+  repeated SocialCandidateStatisticSubmessage candidates = 2;
 }
 
 enum FieldNumbers {
@@ -9602,7 +10213,9 @@ message TestSparseMessage {
   repeated int32 int_rep_a = 6;
   repeated int32 int_rep_b = 7;
   string str_field = 20;
+  repeated string str_rep = 21;
   TestSparseMessage2 sparse_msg_opt = 10;
+  repeated TestSparseMessage2 sparse_msg_rep = 11;
 }
 
 message TestSparseMessage2 {
@@ -9626,6 +10239,7 @@ message TelemetryMessage {
   uint32 group = 2;
   uint32 name = 3;
   fixed32 timestamp = 4;
+  repeated TelemetryAttribute attrs = 5;
 }
 
 enum HoverTipStyle {
@@ -9769,6 +10383,7 @@ message UiObjectMetadata {
   string custom_name = 4;
   LocalizedString recipe_name = 5;
   fixed64 crafter_sim_id = 6;
+  repeated LocalizedString buff_effects = 7;
   LocalizedString recipe_description = 8;
   uint32 quality = 9;
   uint32 servings = 10;
@@ -9777,8 +10392,11 @@ message UiObjectMetadata {
   LocalizedString style_name = 13;
   uint32 simoleon_value = 14;
   ResourceKey main_icon = 15;
+  repeated ResourceKey sub_icons = 16;
   LocalizedString quality_description = 17;
   fixed32 quality_color = 18;
+  repeated LocalizedString object_info_names = 19;
+  repeated LocalizedString object_info_descriptions = 20;
   string inscription = 21;
   string custom_description = 22;
   LocalizedString header = 23;
@@ -9792,11 +10410,13 @@ message UiObjectMetadata {
   LocalizedString season_text = 31;
   LocalizedString spoiled_time_text = 32;
   uint64 rel_override_id = 33;
+  repeated IconInfo icon_infos = 34;
   LocalizedString simoleon_custom_text = 35;
   uint32 creature_type = 36;
   LocalizedString header_subtext = 37;
   LocalizedString header_status = 38;
   uint32 mark_up_value = 39;
+  repeated ObjectTimer object_timers = 40;
   LocalizedString footer_text = 41;
 }
 
@@ -9818,6 +10438,7 @@ message IconInfo {
   LocalizedString tooltip = 10;
   CanvasStateType canvas_state_type = 11;
   LocalizedString location_desc = 12;
+  repeated Vector3 multicolor = 13;
 }
 
 message InventoryUpdate {
@@ -9842,6 +10463,7 @@ message DynamicInventoryItemData {
   IconInfo icon_info = 9;
   string custom_name = 10;
   LocalizedString recipe_name = 11;
+  repeated InventoryItemSortData sort_data = 12;
   bool is_favorite = 13;
   repeated uint32 dynamic_tags = 14;
   string visual_state = 15;
@@ -9905,9 +10527,11 @@ message IncrementCommunityCollectableCount {
 
 message ShowObjectInventory {
   LocalizedString name = 1;
+  repeated InventoryItemData items = 2;
 }
 
 message InventoryCountUpdate {
+  repeated InventoryCount inventory_counts = 1;
 }
 
 message InventoryCount {
@@ -9945,6 +10569,8 @@ message UiScreenSlam {
 message LotDisplayInfo {
   string lot_name = 1;
   string household_name = 2;
+  repeated IconInfo icon_infos = 3;
+  repeated LocalizedString lot_challenges = 4;
 }
 
 message HouseholdDisplayInfo {
@@ -10018,6 +10644,7 @@ message SimTravelAvailability {
 message AvailableSimsForTravel {
   fixed64 actor_sim_id = 1;
   repeated fixed64 sim_ids_for_travel = 2;
+  repeated SimTravelAvailability available_sims = 3;
 }
 
 message ExtendVacation {
@@ -10041,10 +10668,12 @@ message HouseholdLocationStatus {
   fixed64 household_id = 1;
   string household_name = 2;
   fixed64 home_zone_id = 3;
+  repeated SimInfoLocationStatus sim_info_status = 4;
   bool is_played = 5;
 }
 
 message TravelViewHouseholdsInfo {
+  repeated HouseholdLocationStatus household_locations = 1;
 }
 
 message NotebookEntryListMessage {
@@ -10060,6 +10689,7 @@ message NotebookEntryMessage {
   LocalizedString entry_message = 1;
   IconInfo entry_icon = 2;
   LocalizedString entry_tooltip = 3;
+  repeated NotebookEntryListMessage entry_list = 4;
   bool new_entry = 5;
   LocalizedString entry_list_description = 6;
   UiObjectMetadata entry_metadata_hovertip = 7;
@@ -10074,6 +10704,7 @@ message NotebookSubCategoryMessage {
   LocalizedString subcategory_tooltip = 3;
   NotebookEntryStyle entry_type = 4;
   uint32 max_num_entries = 5;
+  repeated NotebookEntryMessage entries = 6;
   uint32 subcategory_id = 7;
   bool is_sortable = 8;
   bool is_new_entry_sortable = 9;
@@ -10082,11 +10713,13 @@ message NotebookSubCategoryMessage {
 message NotebookCategoryMessage {
   LocalizedString category_name = 1;
   IconInfo category_icon = 2;
+  repeated NotebookSubCategoryMessage subcategories = 3;
   LocalizedString category_description = 4;
   string enum_name = 5;
 }
 
 message NotebookView {
+  repeated NotebookCategoryMessage categories = 1;
   uint32 selected_category_index = 2;
   uint32 selected_subcategory_index = 3;
 }
@@ -10124,6 +10757,7 @@ message RetailMarkupMultiplierEntry {
 }
 
 message RetailMarkupMultiplierMessage {
+  repeated RetailMarkupMultiplierEntry markup_multipliers = 1;
 }
 
 message OwnedRetailLotCountMessage {
@@ -10146,6 +10780,7 @@ message DynamicSignView {
   LocalizedString venue = 2;
   LocalizedString time = 3;
   ResourceKey image = 4;
+  repeated DynamicSignActivityInfo activities = 5;
   LocalizedString action_label = 6;
   LocalizedString disabled_tooltip = 7;
   ResourceKey background_image = 8;
@@ -10179,6 +10814,7 @@ message CalendarEntry {
   uint64 holiday_id = 10;
   uint64 zone_id = 11;
   bool deletable = 12;
+  repeated FestivalActivityData festival_activities = 13;
   bool favorited = 14;
   uint64 entry_guid = 15;
   bool show_go_to_event_button = 16;
@@ -10191,6 +10827,7 @@ message CalendarUpdate {
 }
 
 message Calendar {
+  repeated CalendarEntry calendar_entries = 1;
 }
 
 message SeasonUpdate {
@@ -10209,6 +10846,7 @@ message PrepTaskData {
 message PrepTaskUpdate {
   fixed64 sim_id = 1;
   uint64 gig_uid = 2;
+  repeated PrepTaskData prep_tasks = 3;
 }
 
 message UniversityMajorData {
@@ -10220,6 +10858,7 @@ message UniversityMajorData {
 
 message UniversityData {
   uint64 university_id = 1;
+  repeated UniversityMajorData degrees = 2;
   repeated uint64 elective_class_ids = 3;
 }
 
@@ -10229,9 +10868,11 @@ message UniversityEnrollmentSimData {
 }
 
 message UniversityEnrollmentData {
+  repeated UniversityData universities = 1;
   repeated fixed64 housing_zone_ids = 2;
   UniversityEnrollmentSimData current_enrollment = 3;
   fixed64 household_id = 4;
+  repeated UniversityScholarship scholarships = 5;
   bool is_pregnant = 6;
 }
 
@@ -10241,7 +10882,9 @@ message UniversityScholarship {
 }
 
 message BookView {
+  repeated BookPageMessage pages = 1;
   BookDisplayStyle style = 2;
+  repeated BookTabMessage tabs = 4;
   string context = 5;
 }
 
@@ -10274,6 +10917,8 @@ message BookPageMessage {
   LocalizedString description = 3;
   ResourceKey icon = 4;
   BookCategoryDisplayType category_type = 5;
+  repeated BookCategoryMessage categories = 6;
+  repeated BookEntryMessage entries = 7;
 }
 
 message BookTabMessage {
@@ -10303,6 +10948,8 @@ message CommunityBoardShow {
   uint64 sim_id = 1;
   uint32 influence_points = 2;
   LocalizedString title = 3;
+  repeated CivicPolicy enacted_policies = 4;
+  repeated CivicPolicy balloted_policies = 5;
   bool new_policy_allowed = 6;
   LocalizedString disabled_tooltip = 7;
   uint32 provider_type = 8;
@@ -10315,6 +10962,7 @@ message CommunityBoardShow {
 message CommunityBoardResponse {
   uint64 sim_id = 1;
   uint32 influence_points = 2;
+  repeated CivicPolicy balloted_policies = 3;
   uint32 provider_type = 4;
   uint64 target_id = 5;
 }
@@ -10323,6 +10971,7 @@ message CommunityBoardAddPolicy {
   uint64 sim_id = 1;
   repeated uint64 policy_ids = 2;
   bool new_policy_allowed = 3;
+  repeated CivicPolicy policies = 4;
 }
 
 message BillUtilityInfo {
@@ -10343,11 +10992,16 @@ message BillLineItem {
 }
 
 message ShowBillsDialog {
+  repeated BillUtilityInfo utility_info = 3;
+  repeated BillLineItem line_items = 7;
+  repeated BillLineItem due_bills_line_items = 8;
 }
 
 message ShowSocialMediaDialog {
   uint64 sim_id = 1;
   uint32 followers_count = 2;
+  repeated SocialMediaFeedItem feed_items = 3;
+  repeated SocialMediaMessagesItem messages_items = 4;
   bool is_update = 5;
   bool has_new_posts = 6;
   bool has_new_messages = 7;
@@ -10362,6 +11016,7 @@ message SocialMediaFeedItem {
   uint32 post_type = 4;
   uint64 post_time = 5;
   LocalizedString post_text = 6;
+  repeated SocialMediaReaction reactions = 7;
   bool has_author_reacted = 8;
 }
 
@@ -10375,6 +11030,7 @@ message ShowHorseCompetitionSelector {
   bool is_update = 1;
   HorseCompetitionAssigneeData selected_sim = 2;
   HorseCompetitionAssigneeData selected_horse = 3;
+  repeated HorseCompetitionMetadata competition_metadatas = 4;
 }
 
 message HorseCompetitionMetadata {
@@ -10395,6 +11051,7 @@ message HorseCompetitionAssigneeData {
   fixed64 mood_id = 2;
   uint32 mood_intensity = 3;
   LocalizedString mood_tooltip = 4;
+  repeated HorseCompetitionAssigneeSkillData skills = 5;
 }
 
 message ShowHorseCompetitionResults {
@@ -10414,6 +11071,7 @@ message InventoryItemSellRequest {
 message InventorySellRequest {
   uint64 sim_id = 1;
   repeated uint64 stacks = 2;
+  repeated InventoryItemSellRequest items = 3;
   uint32 currency_type = 4;
 }
 
@@ -10429,9 +11087,11 @@ message ToggleSimInfoPanel {
 }
 
 message UMMessage {
+  repeated AttributeList messages = 1;
 }
 
 message AttributeList {
+  repeated string attributes = 1;
 }
 
 message RefreshFeatureParams {
@@ -10453,6 +11113,7 @@ message VehicleControl {
 }
 
 message VehicleData {
+  repeated VehicleControl controls = 1;
 }
 
 enum VetClinicOutfitType {
@@ -10462,9 +11123,11 @@ enum VetClinicOutfitType {
 
 message CareerOutfit {
   uint32 outfit_index = 1;
+  MannequinSimData mannequin = 2;
 }
 
 message VetClinicConfiguration {
+  repeated CareerOutfit outfits = 1;
 }
 
 message UniversityHousingConfiguration {
@@ -10590,6 +11253,7 @@ message SeasonWeatherInterpolationMessage {
 }
 
 message SeasonWeatherInterpolations {
+  repeated SeasonWeatherInterpolationMessage season_weather_interlops = 1;
 }
 
 message RegionWeather {
@@ -10604,6 +11268,7 @@ message RegionWeather {
 }
 
 message PersistableWeatherService {
+  repeated RegionWeather region_weathers = 1;
 }
 
 message UiWeatherUpdate {
@@ -10625,4 +11290,5 @@ message UiLunarEffectTooltipUpdate {
 }
 
 message MoonForecastUpdate {
+  repeated MoonPhase forecast_moon_phases = 1;
 }

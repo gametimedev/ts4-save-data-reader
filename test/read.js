@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 async function readSims4Data() {
+    let time = Date.now();
     const protoPath = path.join(__dirname, "output_proto", "MasterSchema.proto");
     const savePath = "C:\\Users\\fabis\\Desktop\\S4MM\\Save\\save.bin";
 
@@ -13,7 +14,7 @@ async function readSims4Data() {
         // Force resolve all references
         root.resolveAll();
 
-        const SaveGameType = root.lookupType("EA.Sims4.SaveGameData");
+        const SaveGameType = root.lookupType("EA.Sims4.SaveGameDataPrimary");
         const buffer = fs.readFileSync(savePath);
         const message = SaveGameType.decode(buffer);
 
@@ -27,6 +28,7 @@ async function readSims4Data() {
         console.log("Decode Successful!");
         fs.writeFileSync("output.json", JSON.stringify(result, null, 2));
         console.log("Saved to output.json");
+        console.log("Time taken:", Date.now() - time, "ms");
 
     } catch (e) {
         console.error("Error:", e.message);
